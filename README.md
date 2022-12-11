@@ -1,6 +1,6 @@
 # nvim-recorder
 
-Improving the macro experience in neovim.
+Simplifying and improving how you interact with macros in neovim.
 
 <!--toc:start-->
 - [Features](#features)
