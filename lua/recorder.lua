@@ -48,7 +48,7 @@ function M.setup(config)
 	slot = 1
 
 	toggleKey = config.toggleKey or "q"
-	vim.keymap.set("n", toggleKey, toggleRecording, {desc = "start/stop recording to current macro slot."})
+	vim.keymap.set("n", toggleKey, toggleRecording, {desc = "Start/stop recording to current macro slot."})
 end
 
 ---play the macro recorded in current slot
@@ -65,7 +65,7 @@ function M.switchMacroSlot()
 	local currentMacro = getMacro(macroRegs[slot])
 	local msg = " Now using macro slot [" .. macroRegs[slot] .. "]. "
 	if currentMacro ~= "" then
-		msg = msg + "\n Currently recorded macro: \n " .. currentMacro .. " "
+		msg = msg .. "\n Currently recorded macro: \n " .. currentMacro .. " "
 	end
 	vim.notify(msg, trace)
 end
