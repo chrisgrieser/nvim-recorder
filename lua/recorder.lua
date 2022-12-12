@@ -1,10 +1,12 @@
 require("utils")
 local trace = vim.log.levels.TRACE
 local warn = vim.log.levels.WARN
+local echoerr = vim.cmd.echoerr
 local fn = vim.fn
 local getMacro = vim.fn.getreg
 local setMacro = vim.fn.setreg
 local normal = vim.cmd.normal
+local keymap = vim.keymap.set
 
 ---@return boolean
 local function isRecording()
@@ -40,26 +42,13 @@ local function toggleRecording()
 	end
 end
 
----Setup Macro Plugin
----@param config table
-function M.setup(config)
-	-- TODO typing and validation of config
-	macroRegs = config.slots or {"a", "b"}
-	slot = 1
-
-	toggleKey = config.toggleKey or "q"
-	vim.keymap.set("n", toggleKey, toggleRecording, {desc = "Start/stop recording to current macro slot."})
-end
-
 ---play the macro recorded in current slot
-function M.playRecording()
+local function playRecording()
 	normal {"@" .. macroRegs[slot], bang = true}
 end
 
---------------------------------------------------------------------------------
-
 ---changes the active slot
-function M.switchMacroSlot()
+local function switchMacroSlot()
 	slot = slot + 1
 	if slot > #macroRegs then slot = 1 end
 	local currentMacro = getMacro(macroRegs[slot])
@@ -71,7 +60,7 @@ function M.switchMacroSlot()
 end
 
 ---edit the current slot
-function M.editMacro()
+local function editMacro()
 	local reg = macroRegs[slot]
 	local macroContent = getMacro(reg)
 	local inputConfig = {
@@ -87,10 +76,52 @@ end
 
 --------------------------------------------------------------------------------
 
+---Setup Macro Plugin
+---@param config table
+function M.setup(config)
+	-- TODO typing of config
+	slot = 1 -- initial starting slot
+	macroRegs = config.slots or {"a", "b"}
+
+	-- validation of slots
+	for _, reg in pairs(macroRegs) do
+		local letters = "abcdefghijklmnopqrstuvwxyz"
+		if #reg > 1 or not (letters:find(reg)) then
+			echoerr("'" .. reg .. "' is an invalid slot. Choose only named registers (a-z).")
+			return
+		end
+	end
+	if #macroRegs > 26 then
+		echoerr("")
+		return
+	end
+
+	-- set keymaps
+	toggleKey = config.mapping.startStopRecording or "q"
+	local playKey = config.mapping.playMacro or "Q"
+	local editKey = config.mapping.editMacro or "cq"
+	local switchKey = config.mapping.switchSlot or "<C-q>"
+	keymap("n", toggleKey, toggleRecording, {desc = "Start/stop recording to current macro slot."})
+	keymap("n", playKey, playRecording, {desc = "Play the current macro slot."})
+	keymap("n", editKey, editMacro, {desc = "Edit the macro in the current slot."})
+	keymap("n", switchKey, switchMacroSlot, {desc = "Edit the macro in the current slot."})
+
+	-- clearing
+	if config.clear then
+		for _, reg in pairs(macroRegs) do
+			setMacro(reg, "")
+		end
+	end
+end
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+
 ---returns recording status for status line plugins (e.g., used with cmdheight=0)
 ---@return string
 function M.recordingStatus()
-	if not(isRecording()) then return "" end
+	if not (isRecording()) then return "" end
 	return "  REC [" .. macroRegs[slot] .. "]"
 end
 

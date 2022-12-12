@@ -26,21 +26,27 @@ use "chrisgrieser/nvim-recorder"
 
 ```lua
 -- setup somewhere in your nvim config
-local recorder = require("recorder")
 
--- setup is required. `recorder.setup()` is enough if you are fine with the defaults.
-recorder.setup {
+-- setup is required. `recorder.setup()` is enough if you are fine with the defaults below.
+require("recorder").setup {
 	-- Named registers where macros are saved. 
 	-- First register is the default register/macro-slot used after startup. 
-	-- Default: {"a", "b"}
-	slots = {"a", "b"}, 
-	-- key to start/end recording. Default: "q"
-	toggleKey = "q",
+	-- Be aware that vim saves macros in registers, so using a register inside a 
+	-- macro will cause trouble.
+	slots = {"a", "b"},
+
+	-- clear the macro-slots/registers on startup/running this setup function
+	clear = false,
+
+	-- Mappings
+	mapping = {
+		startStopRecording = "q",
+		playMacro = "Q",
+		editMacro = "cq",
+		switchSlot = "<C-q>",
+	}
 }
--- these keymaps are *not* set by default, you need to set them yourself like this.
-vim.keymap.set("n", "Q", recorder.playRecording)
-vim.keymap.set("n", "<C-Q>", recorder.switchMacroSlot)
-vim.keymap.set("n", "cq", recorder.editMacro)
+
 ```
 
 ```lua
@@ -49,8 +55,9 @@ vim.keymap.set("n", "cq", recorder.editMacro)
 -- indicates whether you are currently recording. Useful if you are using `cmdheight=0`, where recording-status is not visible.
 require("recorder").recordingStatus()
 
--- displays the currently selected macro-slot (register)
-require("recorder").displayActiveSlot()
+-- displays non-empty macro-slots (registers) and indicates the selected one
+-- Recommendation: use with the config `clear = true`
+require("recorder").displaySlots()
 ```
 
 ## Usage
