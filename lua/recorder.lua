@@ -16,6 +16,7 @@ end
 local macroRegs, slot, toggleKey
 local M = {}
 --------------------------------------------------------------------------------
+-- COMMANDS
 
 -- start/stop recording macro into the current slot
 local function toggleRecording()
@@ -82,17 +83,19 @@ local function editMacro()
 end
 
 --------------------------------------------------------------------------------
----@class maps
----@field startStopRecording string
----@field playMacro string
----@field editMacro string
----@field switchSlot string
+-- CONFIG
 
 ---@class configObj
 ---@field slots table<string>: named register slots
 ---@field clear boolean: whether to clear slots/registers on setup
 ---@field timeout number: Default timeout for notification
 ---@field mapping maps: individual mappings
+
+---@class maps
+---@field startStopRecording string
+---@field playMacro string
+---@field editMacro string
+---@field switchSlot string
 
 ---Setup Macro Plugin
 ---@param config configObj
@@ -127,6 +130,7 @@ function M.setup(config)
 end
 
 --------------------------------------------------------------------------------
+-- STATUS LINE COMPONENTS
 
 ---returns recording status for status line plugins (e.g., used with cmdheight=0)
 ---@return string
