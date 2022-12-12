@@ -89,7 +89,7 @@ end
 ---@field switchSlot string
 
 ---@class configObj
----@field slots table: named register slots
+---@field slots table<string>: named register slots
 ---@field clear boolean: whether to clear slots/registers on setup
 ---@field timeout number: Default timeout for notification
 ---@field mapping maps: individual mappings
@@ -97,7 +97,6 @@ end
 ---Setup Macro Plugin
 ---@param config configObj
 function M.setup(config)
-	-- TODO typing of config
 	slot = 1 -- initial starting slot
 	macroRegs = config.slots or {"a", "b"}
 
