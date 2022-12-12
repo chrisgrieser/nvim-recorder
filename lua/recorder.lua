@@ -92,8 +92,8 @@ function M.setup(config)
 
 	-- validation of slots
 	for _, reg in pairs(macroRegs) do
-		local letters = "abcdefghijklmnopqrstuvwxyz"
-		if #reg > 1 or not (letters:find(reg)) then
+
+		if not(reg:find("^%l$")) then
 			echoerr("'" .. reg .. "' is an invalid slot. Choose only named registers (a-z).")
 			return
 		end
