@@ -44,7 +44,12 @@ end
 
 ---play the macro recorded in current slot
 local function playRecording()
-	normal {"@" .. macroRegs[slot], bang = true}
+	local reg = macroRegs[slot]
+	if getMacro(reg) == "" then
+		vim.notify("Macro Slot ["..reg.."] is empty.", warn)
+		return
+	end
+	normal {"@" .. reg, bang = true}
 end
 
 ---changes the active slot
