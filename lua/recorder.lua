@@ -52,9 +52,11 @@ local function switchMacroSlot()
 	slot = slot + 1
 	if slot > #macroRegs then slot = 1 end
 	local currentMacro = getMacro(macroRegs[slot])
-	local msg = " Now using macro slot [" .. macroRegs[slot] .. "]. "
+	local msg = " Now using macro slot [" .. macroRegs[slot] .. "]"
 	if currentMacro ~= "" then
-		msg = msg .. "\n Currently recorded macro: \n " .. currentMacro .. " "
+		msg = msg .. ". \n Currently recorded macro: \n " .. currentMacro .. " "
+	else
+		msg = msg .. "(empty). "
 	end
 	vim.notify(msg, trace)
 end
@@ -91,10 +93,6 @@ function M.setup(config)
 			return
 		end
 	end
-	if #macroRegs > 26 then
-		echoerr("")
-		return
-	end
 
 	-- set keymaps
 	toggleKey = config.mapping.startStopRecording or "q"
@@ -116,8 +114,6 @@ end
 
 --------------------------------------------------------------------------------
 
---------------------------------------------------------------------------------
-
 ---returns recording status for status line plugins (e.g., used with cmdheight=0)
 ---@return string
 function M.recordingStatus()
@@ -125,10 +121,21 @@ function M.recordingStatus()
 	return "  REC [" .. macroRegs[slot] .. "]"
 end
 
----returns active slot for status line plugins
+---returns non-empty for status line plugins.
 ---@return string
-function M.displayActiveSlot()
-	return "Macro [" .. macroRegs[slot] .. "]"
+function M.displaySlots()
+	if isRecording() then return "" end
+	local out = {}
+	for _, reg in pairs(macroRegs) do
+		local notEmpty = getMacro(reg) ~= ""
+		local isActive = macroRegs[slot] == reg
+		if notEmpty and isActive then
+			table.insert(out, "["..reg.."]")
+		elseif notEmpty and not(isActive) then
+			table.insert(out, reg)
+		end
+	end
+	return " "..table.concat(out, " ")
 end
 
 --------------------------------------------------------------------------------
