@@ -54,9 +54,9 @@ local function switchMacroSlot()
 	local currentMacro = getMacro(macroRegs[slot])
 	local msg = " Now using macro slot [" .. macroRegs[slot] .. "]"
 	if currentMacro ~= "" then
-		msg = msg .. ". \n Currently recorded macro: \n " .. currentMacro .. " "
+		msg = msg .. ".\nCurrently recorded macro:\n" .. currentMacro
 	else
-		msg = msg .. "(empty). "
+		msg = msg .. "(empty)."
 	end
 	vim.notify(msg, trace)
 end
@@ -72,7 +72,7 @@ local function editMacro()
 	vim.ui.input(inputConfig, function(editedMacro)
 		if not (editedMacro) then return end -- cancellation
 		setMacro(reg, editedMacro)
-		vim.notify(" Edited Macro [" .. reg .. "]\n " .. editedMacro, trace)
+		vim.notify("Edited Macro [" .. reg .. "]\n" .. editedMacro, trace)
 	end)
 end
 
@@ -130,13 +130,13 @@ function M.displaySlots()
 		local notEmpty = getMacro(reg) ~= ""
 		local isActive = macroRegs[slot] == reg
 		if notEmpty and isActive then
-			table.insert(out, "["..reg.."]")
-		elseif notEmpty and not(isActive) then
+			table.insert(out, "[" .. reg .. "]")
+		elseif notEmpty and not (isActive) then
 			table.insert(out, reg)
 		end
 	end
 	local output = table.concat(out, " ")
-	if output ~= "" then output = " "..output end
+	if output ~= "" then output = " " .. output end
 	return output
 end
 
