@@ -32,13 +32,13 @@ local function toggleRecording()
 		local justRecorded = getMacro(reg)
 		if justRecorded == "" then
 			setMacro(reg, prevRec)
-			vim.notify(" Recording aborted. (Previous recording is kept.) ", warn)
+			vim.notify("Recording aborted. (Previous recording is kept.)", warn)
 		else
-			vim.notify(" Recorded [" .. reg .. "]: \n " .. justRecorded .. " ", trace)
+			vim.notify("Recorded [" .. reg .. "]:\n" .. justRecorded, trace)
 		end
 	else
 		normal {"q" .. reg, bang = true}
-		vim.notify(" Recording to [" .. reg .. "]… ", trace)
+		vim.notify("Recording to [" .. reg .. "]…", trace)
 	end
 end
 
@@ -135,7 +135,9 @@ function M.displaySlots()
 			table.insert(out, reg)
 		end
 	end
-	return " "..table.concat(out, " ")
+	local output = table.concat(out, " ")
+	if output ~= "" then output = " "..output end
+	return output
 end
 
 --------------------------------------------------------------------------------
