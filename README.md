@@ -25,9 +25,12 @@ use "chrisgrieser/nvim-recorder"
 ```
 
 ```lua
--- setup somewhere in your nvim config
+-- setup is required and will use the default config
+require("recorder").setup()
+```
 
--- setup is required. `recorder.setup()` is enough if you are fine with the defaults below.
+```lua
+-- configure the plugin. Below are the default values.
 require("recorder").setup {
 	-- Named registers where macros are saved. 
 	-- First register is the default register/macro-slot used after startup. 
