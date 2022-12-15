@@ -30,7 +30,7 @@ require("recorder").setup()
 ```
 
 ```lua
--- configure the plugin. Below are the default values.
+-- configure the plugin. Below are the default values
 require("recorder").setup {
 	-- Named registers where macros are saved. 
 	-- First register is the default register/macro-slot used after startup. 
@@ -49,7 +49,6 @@ require("recorder").setup {
 		switchSlot = "<C-q>",
 	}
 }
-
 ```
 
 ```lua
