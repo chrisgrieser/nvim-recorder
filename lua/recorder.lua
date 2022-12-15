@@ -1,8 +1,9 @@
 require("utils")
+local fn = vim.fn
+local v = vim.v
 local trace = vim.log.levels.TRACE
 local warn = vim.log.levels.WARN
 local echoerr = vim.cmd.echoerr
-local fn = vim.fn
 local getMacro = vim.fn.getreg
 local setMacro = vim.fn.setreg
 local normal = vim.cmd.normal
@@ -50,7 +51,7 @@ local function playRecording()
 		vim.notify("Macro Slot ["..reg.."] is empty.", warn)
 		return
 	end
-	normal {"@" .. reg, bang = true}
+	normal {v.count1.."@" .. reg, bang = true}
 end
 
 ---changes the active slot
