@@ -1,8 +1,6 @@
 require("utils")
 local fn = vim.fn
 local v = vim.v
-local trace = vim.log.levels.TRACE
-local warn = vim.log.levels.WARN
 local echoerr = vim.cmd.echoerr
 local getMacro = vim.fn.getreg
 local setMacro = vim.fn.setreg
@@ -14,7 +12,7 @@ local function isRecording()
 	return fn.reg_recording() ~= ""
 end
 
-local macroRegs, slot, toggleKey
+local macroRegs, slot, toggleKey, logLevel
 local M = {}
 --------------------------------------------------------------------------------
 -- COMMANDS
@@ -34,13 +32,13 @@ local function toggleRecording()
 		local justRecorded = getMacro(reg)
 		if justRecorded == "" then
 			setMacro(reg, prevRec)
-			vim.notify("Recording aborted. (Previous recording is kept.)", warn)
+			vim.notify("Recording aborted. (Previous recording is kept.)", logLevel)
 		else
-			vim.notify("Recorded [" .. reg .. "]:\n" .. justRecorded, trace)
+			vim.notify("Recorded [" .. reg .. "]:\n" .. justRecorded, logLevel)
 		end
 	else
 		normal {"q" .. reg, bang = true}
-		vim.notify("Recording to [" .. reg .. "]…", trace)
+		vim.notify("Recording to [" .. reg .. "]…", logLevel)
 	end
 end
 
@@ -48,7 +46,7 @@ end
 local function playRecording()
 	local reg = macroRegs[slot]
 	if getMacro(reg) == "" then
-		vim.notify("Macro Slot ["..reg.."] is empty.", warn)
+		vim.notify("Macro Slot ["..reg.."] is empty.", logLevel)
 		return
 	end
 	normal {v.count1.."@" .. reg, bang = true}
@@ -65,7 +63,7 @@ local function switchMacroSlot()
 	else
 		msg = msg .. "(empty)."
 	end
-	vim.notify(msg, trace)
+	vim.notify(msg, logLevel)
 end
 
 ---edit the current slot
@@ -79,7 +77,7 @@ local function editMacro()
 	vim.ui.input(inputConfig, function(editedMacro)
 		if not (editedMacro) then return end -- cancellation
 		setMacro(reg, editedMacro)
-		vim.notify("Edited Macro [" .. reg .. "]\n" .. editedMacro, trace)
+		vim.notify("Edited Macro [" .. reg .. "]\n" .. editedMacro, logLevel)
 	end)
 end
 
@@ -91,6 +89,7 @@ end
 ---@field clear boolean: whether to clear slots/registers on setup
 ---@field timeout number: Default timeout for notification
 ---@field mapping maps: individual mappings
+---@field logLevel integer: log level (vim.log.levels)
 
 ---@class maps
 ---@field startStopRecording string
@@ -103,6 +102,7 @@ end
 function M.setup(config)
 	slot = 1 -- initial starting slot
 	macroRegs = config.slots or {"a", "b"}
+	logLevel = config.logLevel or vim.log.levels.INFO
 
 	-- validation of slots
 	for _, reg in pairs(macroRegs) do

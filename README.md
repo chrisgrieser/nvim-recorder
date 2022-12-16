@@ -41,6 +41,9 @@ require("recorder").setup {
 	-- clear the macro-slots/registers on startup/running this setup function
 	clear = false,
 
+	-- log level used for any notification. Mostly relevant for nvim-notify. (Note that by default, nvim-notify only shows levels 2 and higher.)
+	logLevel = vim.log.levels.INFO,
+
 	-- Mappings
 	mapping = {
 		startStopRecording = "q",
