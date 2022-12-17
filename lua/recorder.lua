@@ -1,4 +1,3 @@
-require("utils")
 local fn = vim.fn
 local v = vim.v
 local echoerr = vim.cmd.echoerr
