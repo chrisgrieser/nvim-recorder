@@ -6,6 +6,7 @@ Simplifying and improving how you interact with macros in neovim.
 - [Features](#features)
 - [Installation and Configuration](#installation-and-configuration)
 - [Usage](#usage)
+- [Status Line Components](#status-line-components)
 - [About me](#about-me)
 <!--toc:end-->
 
@@ -14,7 +15,7 @@ Simplifying and improving how you interact with macros in neovim.
 - Instead of having to remember in which register you saved a macro in, you cycle between macro slots. (I'd guess that 90% of vim users never use more than two macros at the same time anyway…)
 - Some quality-of-life features like notifications with macro content, the ability to cancel a recording, or a command to edit macros.
 - Status line components. Particularly useful if you use `cmdheight=0`.
-- Uses up-to-date nvim features like `vim.ui.input` or `vim.notify`. This means you can get nicer input fields via plugins like [dressing.nvim](https://github.com/stevearc/dressing.nvim), and nicer confirmation notices with plugins like [nvim-notify](https://github.com/rcarriga/nvim-notify).
+- Uses up-to-date nvim features like `vim.ui.input` or `vim.notify`. This means you can get confirmation notices with plugins like [nvim-notify](https://github.com/rcarriga/nvim-notify).
 - Written 100% in lua. Lightweight wrapper around the built-in macro-feature.
 
 ## Installation and Configuration
@@ -54,6 +55,12 @@ require("recorder").setup {
 }
 ```
 
+## Usage
+- Use the `toggleKey` to start recording. Saves automatically to the current macro slot, so you do not need to specify a register.
+- Press the `toggleKey` again to end the recording. 
+- `.switchMacroSlot()` cycles through the registers you specified in the configuration, and also show a notice with that macro's content.
+- `.editMacro()` and `.playRecording()` to pretty much what they say.
+
 ## Status Line Components
 
 ```lua
@@ -73,12 +80,6 @@ lualine_y = {
 	{ require("recorder").displaySlots },
 },
 ```
-
-## Usage
-- Use the `toggleKey` to start recording. Saves automatically to the current macro slot, so you do not need to specify a register.
-- Press the `toggleKey` again to end the recording. 
-- `.switchMacroSlot()` cycles through the registers you specified in the configuration, and also show a notice with that macro's content.
-- `.editMacro()` and `.playRecording()` to pretty much what they say.
 
 <!-- vale Google.FirstPerson = NO -->
 ## About me
