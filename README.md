@@ -10,12 +10,12 @@ Simplifying and improving how you interact with macros in neovim.
 <!--toc:end-->
 
 ## Features
-- Simplifies recording macros for one-off macros.
+- Simplifies recording macros, especially for one-off macros.
 - Instead of having to remember in which register you saved a macro in, you cycle between macro slots. (I'd guess that 90% of vim users never use more than two macros at the same time anyway…)
-- Some quality-of-life features like notifications, the ability to cancel a recording, or a command to edit macros.
-- Functions for status line plugins. Particularly useful if you use `cmdheight=0`.
+- Some quality-of-life features like notifications with macro content, the ability to cancel a recording, or a command to edit macros.
+- Status line components. Particularly useful if you use `cmdheight=0`.
 - Uses up-to-date nvim features like `vim.ui.input` or `vim.notify`. This means you can get nicer input fields via plugins like [dressing.nvim](https://github.com/stevearc/dressing.nvim), and nicer confirmation notices with plugins like [nvim-notify](https://github.com/rcarriga/nvim-notify).
-- Written 100% in lua. Lightweight (< 150 lines) wrapper around the built-in macro-feature.
+- Written 100% in lua. Lightweight wrapper around the built-in macro-feature.
 
 ## Installation and Configuration
 
@@ -30,7 +30,7 @@ require("recorder").setup()
 ```
 
 ```lua
--- configure the plugin. Below are the default values
+-- default config
 require("recorder").setup {
 	-- Named registers where macros are saved. 
 	-- First register is the default register/macro-slot used after startup. 
@@ -44,7 +44,7 @@ require("recorder").setup {
 	-- log level used for any notification. Mostly relevant for nvim-notify. (Note that by default, nvim-notify only shows levels 2 and higher.)
 	logLevel = vim.log.levels.INFO,
 
-	-- Mappings
+	-- Default Mappings
 	mapping = {
 		startStopRecording = "q",
 		playMacro = "Q",
@@ -54,20 +54,29 @@ require("recorder").setup {
 }
 ```
 
-```lua
--- For status line plugins
+## Status Line Components
 
+```lua
 -- indicates whether you are currently recording. Useful if you are using `cmdheight=0`, where recording-status is not visible.
 require("recorder").recordingStatus()
 
--- displays non-empty macro-slots (registers) and indicates the selected one
+-- displays non-empty macro-slots (registers) and indicates the selected ones. Only displayed when *not* recording.
 -- Recommendation: use with the config `clear = true`
 require("recorder").displaySlots()
 ```
 
+Example for adding the status line components for [lualine](https://github.com/nvim-lualine/lualine.nvim):
+
+```lua
+lualine_y = {
+	{ require("recorder").recordingStatus },
+	{ require("recorder").displaySlots },
+},
+```
+
 ## Usage
 - Use the `toggleKey` to start recording. Saves automatically to the current macro slot, so you do not need to specify a register.
-- Press the `toggleKey` again to end the recording. When you press it directly after the beginning of the recording (i.e., an empty macro), the keypress is considered a cancellation and the register/macro-slot is not overridden with an empty macro. 
+- Press the `toggleKey` again to end the recording. 
 - `.switchMacroSlot()` cycles through the registers you specified in the configuration, and also show a notice with that macro's content.
 - `.editMacro()` and `.playRecording()` to pretty much what they say.
 
