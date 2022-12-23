@@ -149,10 +149,10 @@ function M.displaySlots()
 		local empty = getMacro(reg) == ""
 		local active = macroRegs[slot] == reg
 		if empty and active then
-			table.insert(out, "[" .. reg .. "]")
-		elseif not empty and active then
 			table.insert(out, "[ ]")
-		elseif empty and not active then
+		elseif not empty and active then
+			table.insert(out, "[" .. reg .. "]")
+		elseif not empty and not active then
 			table.insert(out, reg)
 		end
 	end
