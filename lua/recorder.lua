@@ -59,7 +59,7 @@ local function switchMacroSlot()
 	local currentMacro = getMacro(macroRegs[slot])
 	local msg = " Now using macro slot [" .. macroRegs[slot] .. "]"
 	if currentMacro ~= "" then
-		msg = msg .. ".\nCurrently recorded macro:\n" .. currentMacro
+		msg = msg .. ".\n" .. currentMacro
 	else
 		msg = msg .. "\n(empty)"
 	end
@@ -136,7 +136,7 @@ end
 ---returns recording status for status line plugins (e.g., used with cmdheight=0)
 ---@return string
 function M.recordingStatus()
-	if not (isRecording()) then return "" end
+	if not isRecording() then return "" end
 	return "  REC [" .. macroRegs[slot] .. "]"
 end
 
@@ -146,15 +146,17 @@ function M.displaySlots()
 	if isRecording() then return "" end
 	local out = {}
 	for _, reg in pairs(macroRegs) do
-		local notEmpty = getMacro(reg) ~= ""
-		local isActive = macroRegs[slot] == reg
-		if notEmpty and isActive then
+		local empty = getMacro(reg) == ""
+		local active = macroRegs[slot] == reg
+		if empty and active then
 			table.insert(out, "[" .. reg .. "]")
-		elseif notEmpty and not isActive then
+		elseif not empty and active then
+			table.insert(out, "[ ]")
+		elseif empty and not active then
 			table.insert(out, reg)
 		end
 	end
-	local output = table.concat(out, " ")
+	local output = table.concat(out)
 	if output ~= "" then output = " " .. output end
 	return output
 end
