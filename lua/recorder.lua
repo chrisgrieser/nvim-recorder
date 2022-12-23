@@ -3,13 +3,14 @@ local v = vim.v
 local echoerr = vim.cmd.echoerr
 local getMacro = vim.fn.getreg
 local setMacro = vim.fn.setreg
-local normal = vim.cmd.normal
 local keymap = vim.keymap.set
 
 ---@return boolean
-local function isRecording()
-	return fn.reg_recording() ~= ""
-end
+local function isRecording() return fn.reg_recording() ~= "" end
+
+---runs :normal natively with bang
+---@param cmdStr any
+function normal(cmdStr) vim.cmd.normal { cmdStr, bang = true } end
 
 local macroRegs, slot, toggleKey, logLevel
 local M = {}
@@ -21,7 +22,7 @@ local function toggleRecording()
 	local reg = macroRegs[slot]
 	if isRecording() then
 		local prevRec = getMacro(macroRegs[slot])
-		normal {"q", bang = true}
+		normal("q")
 
 		-- NOTE the macro key records itself, so it has to be removed from the
 		-- register. As this function has to know the variable length of the
@@ -36,7 +37,7 @@ local function toggleRecording()
 			vim.notify("Recorded [" .. reg .. "]:\n" .. justRecorded, logLevel)
 		end
 	else
-		normal {"q" .. reg, bang = true}
+		normal("q" .. reg)
 		vim.notify("Recording to [" .. reg .. "]…", logLevel)
 	end
 end
@@ -45,10 +46,10 @@ end
 local function playRecording()
 	local reg = macroRegs[slot]
 	if getMacro(reg) == "" then
-		vim.notify("Macro Slot ["..reg.."] is empty.", logLevel)
+		vim.notify("Macro Slot [" .. reg .. "] is empty.", logLevel)
 		return
 	end
-	normal {v.count1.."@" .. reg, bang = true}
+	normal(v.count1 .. "@" .. reg)
 end
 
 ---changes the active slot
@@ -60,7 +61,7 @@ local function switchMacroSlot()
 	if currentMacro ~= "" then
 		msg = msg .. ".\nCurrently recorded macro:\n" .. currentMacro
 	else
-		msg = msg .. "(empty)."
+		msg = msg .. "\n(empty)"
 	end
 	vim.notify(msg, logLevel)
 end
@@ -74,7 +75,7 @@ local function editMacro()
 		default = macroContent,
 	}
 	vim.ui.input(inputConfig, function(editedMacro)
-		if not (editedMacro) then return end -- cancellation
+		if not editedMacro then return end -- cancellation
 		setMacro(reg, editedMacro)
 		vim.notify("Edited Macro [" .. reg .. "]\n" .. editedMacro, logLevel)
 	end)
@@ -100,12 +101,12 @@ end
 ---@param config configObj
 function M.setup(config)
 	slot = 1 -- initial starting slot
-	macroRegs = config.slots or {"a", "b"}
+	macroRegs = config.slots or { "a", "b" }
 	logLevel = config.logLevel or vim.log.levels.INFO
 
 	-- validation of slots
 	for _, reg in pairs(macroRegs) do
-		if not(reg:find("^%l$")) then
+		if not (reg:find("^%l$")) then
 			echoerr("'" .. reg .. "' is an invalid slot. Choose only named registers (a-z).")
 			return
 		end
@@ -116,10 +117,10 @@ function M.setup(config)
 	local playKey = config.mapping.playMacro or "Q"
 	local editKey = config.mapping.editMacro or "cq"
 	local switchKey = config.mapping.switchSlot or "<C-q>"
-	keymap("n", toggleKey, toggleRecording, {desc = "Start/stop recording to current macro slot."})
-	keymap("n", playKey, playRecording, {desc = "Play the current macro slot."})
-	keymap("n", editKey, editMacro, {desc = "Edit the macro in the current slot."})
-	keymap("n", switchKey, switchMacroSlot, {desc = "Edit the macro in the current slot."})
+	keymap("n", toggleKey, toggleRecording, { desc = "Start/stop recording to current macro slot." })
+	keymap("n", playKey, playRecording, { desc = "Play the current macro slot." })
+	keymap("n", editKey, editMacro, { desc = "Edit the macro in the current slot." })
+	keymap("n", switchKey, switchMacroSlot, { desc = "Edit the macro in the current slot." })
 
 	-- clearing
 	if config.clear then
@@ -149,7 +150,7 @@ function M.displaySlots()
 		local isActive = macroRegs[slot] == reg
 		if notEmpty and isActive then
 			table.insert(out, "[" .. reg .. "]")
-		elseif notEmpty and not (isActive) then
+		elseif notEmpty and not isActive then
 			table.insert(out, reg)
 		end
 	end
