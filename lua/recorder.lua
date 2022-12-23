@@ -156,9 +156,10 @@ function M.displaySlots()
 			table.insert(out, reg)
 		end
 	end
+
 	local output = table.concat(out)
-	if output ~= "[ ]" then output = " " .. output end
-	return output
+	if output == "[ ]" then return "" end
+	return " " .. output
 end
 
 --------------------------------------------------------------------------------
