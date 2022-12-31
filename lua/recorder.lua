@@ -32,7 +32,7 @@ local function toggleRecording()
 		local justRecorded = getMacro(reg)
 		if justRecorded == "" then
 			setMacro(reg, prevRec)
-			vim.notify("Recording aborted. (Previous recording is kept.)", logLevel)
+			vim.notify("Recording aborted.\n(Previous recording is kept.)", logLevel)
 		else
 			vim.notify("Recorded [" .. reg .. "]:\n" .. justRecorded, logLevel)
 		end
