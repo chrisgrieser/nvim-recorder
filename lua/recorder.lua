@@ -122,11 +122,10 @@ local function editMacro()
 	end)
 end
 
-local function addBreakpoint()
+local function addBreakPoint()
 	if isRecording() then
 		-- does nothing, but is recorded in the macro
 		vim.notify("Macro breakpoint added.", logLevel)
-		return
 	else
 		vim.notify("Cannot insert breakpoint outside of a recording.", logWarn)
 	end
@@ -147,7 +146,7 @@ end
 ---@field playMacro string
 ---@field editMacro string
 ---@field switchSlot string
----@field addbreakPoint string
+---@field addBreakPoint string
 
 ---Setup Macro Plugin
 ---@param config configObj
@@ -159,7 +158,7 @@ function M.setup(config)
 	-- validation of slots
 	for _, reg in pairs(macroRegs) do
 		if not (reg:find("^%l$")) then
-			echoerr("'" .. reg .. "' is an invalid slot. Choose only named registers (a-z).")
+			vim.notify("'" .. reg .. "' is an invalid slot. Choose only named registers (a-z).", vim.log.levels.ERROR)
 			return
 		end
 	end
@@ -175,7 +174,7 @@ function M.setup(config)
 	keymap("n", editKey, editMacro, { desc = "Edit the macro in the current slot." })
 	keymap("n", switchKey, switchMacroSlot, { desc = "Edit the macro in the current slot." })
 	if breakPointKey then
-		keymap("n", breakPointKey, addBreakpoint, { desc = "Insert Break point during a recording." })
+		keymap("n", breakPointKey, addBreakPoint, { desc = "Insert Break point during a recording." })
 	end
 
 	-- clearing
