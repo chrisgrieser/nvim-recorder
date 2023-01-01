@@ -53,9 +53,6 @@ require("recorder").setup {
 	-- macro will cause trouble.
 	slots = {"a", "b"},
 
-	-- clear the macro-slots/registers on startup
-	clear = false,
-
 	-- Default Mappings
 	mapping = {
 		startStopRecording = "q",
@@ -64,6 +61,7 @@ require("recorder").setup {
 		switchSlot = "<C-q>",
 		addBreakPoint = "!",
 	}
+
 
 	-- log level used for any notification. Mostly relevant for nvim-notify. (Note that by default, nvim-notify only shows levels 2 and higher.)
 	logLevel = vim.log.levels.INFO,
@@ -93,8 +91,8 @@ Starting a new recording, editing a macro, or switching macro slot all reset the
 > __Note__  
 > You can also do other things in between playing segments of the macro, like moving a few characters to the left or right. That way you can also use breakpoints to manually correct things.
 
-__Counts: ignoring Breakpoints__  
-When you play the macro with a count (for example `50Q`), breakpoints are automatically ignored. *Tip*: add a count of 1 (`1Q`) to play a macro once and ignore any breakpoints.
+__Ignoring Breakpoints__  
+When you play the macro with a *count* (for example `50Q`), breakpoints are automatically ignored. *Tip*: add a count of 1 (`1Q`) to play a macro once and ignore any breakpoints.
 
 
 ## Status Line Components
