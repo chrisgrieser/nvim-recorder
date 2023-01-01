@@ -8,7 +8,7 @@ local keymap = vim.keymap.set
 local function isRecording() return fn.reg_recording() ~= "" end
 local function isPlaying() return fn.reg_executing() ~= "" end
 
----runs :normal natively with bang
+---runs `:normal` natively with bang
 ---@param cmdStr any
 function normal(cmdStr) vim.cmd.normal { cmdStr, bang = true } end
 
@@ -92,6 +92,7 @@ end
 local function switchMacroSlot()
 	slotIndex = slotIndex + 1
 	breakCounter = 0 -- reset breakpoint counter
+
 	if slotIndex > #macroRegs then slotIndex = 1 end
 	local currentMacro = getMacro(macroRegs[slotIndex])
 	local msg = " Now using macro slot [" .. macroRegs[slotIndex] .. "]"
@@ -109,7 +110,7 @@ local function editMacro()
 	local reg = macroRegs[slotIndex]
 	local macroContent = getMacro(reg)
 	local inputConfig = {
-		prompt = "Edit Macro [" .. reg .. "]: ",
+		prompt = "Edit Macro [" .. reg .. "]:",
 		default = macroContent,
 	}
 	vim.ui.input(inputConfig, function(editedMacro)
