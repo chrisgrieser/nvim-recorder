@@ -12,49 +12,89 @@ local function isRecording() return fn.reg_recording() ~= "" end
 ---@param cmdStr any
 function normal(cmdStr) vim.cmd.normal { cmdStr, bang = true } end
 
-local macroRegs, slot, toggleKey, logLevel
+
+local macroRegs, slot, logLevel
+local toggleKey, breakPointKey
 local M = {}
+
+local breakCounter = 0 -- resets break counter on plugin reload
+local logWarn = vim.log.levels.WARN
 --------------------------------------------------------------------------------
 -- COMMANDS
 
 -- start/stop recording macro into the current slot
 local function toggleRecording()
 	local reg = macroRegs[slot]
-	if isRecording() then
-		local prevRec = getMacro(macroRegs[slot])
-		normal("q")
 
-		-- NOTE the macro key records itself, so it has to be removed from the
-		-- register. As this function has to know the variable length of the
-		-- LHS key that triggered it, it has to be passed in via .setup()-function
-		setMacro(reg, getMacro(reg):sub(1, -1 * (#toggleKey + 1)))
-
-		local justRecorded = getMacro(reg)
-		if justRecorded == "" then
-			setMacro(reg, prevRec)
-			vim.notify("Recording aborted.\n(Previous recording is kept.)", logLevel)
-		else
-			vim.notify("Recorded [" .. reg .. "]:\n" .. justRecorded, logLevel)
-		end
-	else
+	-- start recording
+	if not isRecording() then
+		breakCounter = 0 -- reset break points
 		normal("q" .. reg)
 		vim.notify("Recording to [" .. reg .. "]…", logLevel)
+		return
+	end
+
+	-- stop recording
+	local prevRec = getMacro(macroRegs[slot])
+	normal("q")
+
+	-- NOTE the macro key records itself, so it has to be removed from the
+	-- register. As this function has to know the variable length of the
+	-- LHS key that triggered it, it has to be passed in via .setup()-function
+	local recording = getMacro(reg):sub(1, -1 * (#toggleKey + 1))
+	setMacro(reg, recording)
+
+	local justRecorded = getMacro(reg)
+	if justRecorded == "" then
+		setMacro(reg, prevRec)
+		vim.notify("Recording aborted.\n(Previous recording is kept.)", logLevel)
+	else
+		vim.notify("Recorded [" .. reg .. "]:\n" .. justRecorded, logLevel)
 	end
 end
 
 ---play the macro recorded in current slot
 local function playRecording()
 	local reg = macroRegs[slot]
-	if getMacro(reg) == "" then
+	local macro = getMacro(reg)
+
+	-- empty slot
+	if macro == "" then
 		vim.notify("Macro Slot [" .. reg .. "] is empty.", logLevel)
 		return
+
+	-- macro has breakpoints
+	elseif macro:find(vim.pesc(breakPointKey)) then
+		if v.count1 > 1 then
+			vim.notify("Cannot play macro ["..reg.."] with a count since it contains breakpoints.\nRemove breakpoints or play without a count.", logWarn)
+			return
+		end
+		breakCounter = breakCounter + 1
+		local macroParts = vim.split(macro, breakPointKey, {})
+		local partialMacro = macroParts[breakCounter]
+
+		-- play the partial macro
+		setMacro(slot, partialMacro)
+		normal("@" .. reg)
+		setMacro(slot, macro) -- restore original macro for all other purposes like prewing slots
+
+		if breakCounter == #macroParts then
+			vim.notify("Reached end of macro.", logLevel)
+			breakCounter = 0
+		else
+			vim.notify("Reached Breakpoint #"..tostring(breakCounter), logLevel)
+		end
+
+	-- play normal macro
+	else
+		normal(v.count1 .. "@" .. reg)
 	end
-	normal(v.count1 .. "@" .. reg)
 end
 
 ---changes the active slot
 local function switchMacroSlot()
 	slot = slot + 1
+	breakCounter = 0 -- reset breakpoint counter
 	if slot > #macroRegs then slot = 1 end
 	local currentMacro = getMacro(macroRegs[slot])
 	local msg = " Now using macro slot [" .. macroRegs[slot] .. "]"
@@ -68,6 +108,7 @@ end
 
 ---edit the current slot
 local function editMacro()
+	breakCounter = 0 -- reset breakpoint counter
 	local reg = macroRegs[slot]
 	local macroContent = getMacro(reg)
 	local inputConfig = {
@@ -79,6 +120,16 @@ local function editMacro()
 		setMacro(reg, editedMacro)
 		vim.notify("Edited Macro [" .. reg .. "]\n" .. editedMacro, logLevel)
 	end)
+end
+
+local function addBreakpoint()
+	if isRecording() then
+		-- does nothing, but is recorded in the macro
+		vim.notify("Macro breakpoint added.", logLevel)
+		return
+	else
+		vim.notify("Cannot insert breakpoint outside of a recording.", logWarn)
+	end
 end
 
 --------------------------------------------------------------------------------
@@ -96,6 +147,7 @@ end
 ---@field playMacro string
 ---@field editMacro string
 ---@field switchSlot string
+---@field breakPoint string
 
 ---Setup Macro Plugin
 ---@param config configObj
@@ -117,10 +169,14 @@ function M.setup(config)
 	local playKey = config.mapping.playMacro or "Q"
 	local editKey = config.mapping.editMacro or "cq"
 	local switchKey = config.mapping.switchSlot or "<C-q>"
+	breakPointKey = config.mapping.breakPoint -- not setting default yes, as it's still experimental
 	keymap("n", toggleKey, toggleRecording, { desc = "Start/stop recording to current macro slot." })
 	keymap("n", playKey, playRecording, { desc = "Play the current macro slot." })
 	keymap("n", editKey, editMacro, { desc = "Edit the macro in the current slot." })
 	keymap("n", switchKey, switchMacroSlot, { desc = "Edit the macro in the current slot." })
+	if breakPointKey then
+		keymap("n", breakPointKey, addBreakpoint, { desc = "Insert Break point during a recording." })
+	end
 
 	-- clearing
 	if config.clear then
