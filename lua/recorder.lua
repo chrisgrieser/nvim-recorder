@@ -6,6 +6,7 @@ local keymap = vim.keymap.set
 
 ---@return boolean
 local function isRecording() return fn.reg_recording() ~= "" end
+local function isPlaying() return fn.reg_executing() ~= "" end
 
 ---runs :normal natively with bang
 ---@param cmdStr any
@@ -77,13 +78,12 @@ local function playRecording()
 		if breakCounter ~= #macroParts then
 			vim.notify("Reached Breakpoint #" .. tostring(breakCounter), logLevel)
 		else
-			vim.notify("Reached end of macro.", logLevel)
+			vim.notify("Reached end of macro", logLevel)
 			breakCounter = 0
 		end
 
 	-- normal macro
 	else
-		if hasBreakPoints and countGiven then vim.notify("Ignoring breakpoints since using a count.", logLevel) end
 		normal(v.count1 .. "@" .. reg)
 	end
 end
@@ -121,9 +121,9 @@ end
 
 local function addBreakPoint()
 	if isRecording() then
-		-- does nothing, but is recorded in the macro
+		-- nothing happens, but the key is still recorded in the macro
 		vim.notify("Macro breakpoint added.", logLevel)
-	else
+	elseif not isPlaying() then
 		vim.notify("Cannot insert breakpoint outside of a recording.", vim.log.levels.WARN)
 	end
 end

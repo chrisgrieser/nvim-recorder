@@ -62,6 +62,8 @@ require("recorder").setup {
 		addBreakPoint = "!",
 	}
 
+	-- clear all macros on startup
+	clear = false,
 
 	-- log level used for any notification. Mostly relevant for nvim-notify. (Note that by default, nvim-notify only shows levels 2 and higher.)
 	logLevel = vim.log.levels.INFO,
