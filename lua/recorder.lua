@@ -147,7 +147,7 @@ end
 ---@field playMacro string
 ---@field editMacro string
 ---@field switchSlot string
----@field breakPoint string
+---@field addbreakPoint string
 
 ---Setup Macro Plugin
 ---@param config configObj
@@ -169,7 +169,7 @@ function M.setup(config)
 	local playKey = config.mapping.playMacro or "Q"
 	local editKey = config.mapping.editMacro or "cq"
 	local switchKey = config.mapping.switchSlot or "<C-q>"
-	breakPointKey = config.mapping.breakPoint -- not setting default yes, as it's still experimental
+	breakPointKey = config.mapping.addBreakPoint -- not setting default yet, as it's still experimental
 	keymap("n", toggleKey, toggleRecording, { desc = "Start/stop recording to current macro slot." })
 	keymap("n", playKey, playRecording, { desc = "Play the current macro slot." })
 	keymap("n", editKey, editMacro, { desc = "Edit the macro in the current slot." })
