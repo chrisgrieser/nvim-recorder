@@ -137,7 +137,7 @@ end
 ---@return string
 function M.recordingStatus()
 	if not isRecording() then return "" end
-	return "  REC [" .. macroRegs[slot] .. "]"
+	return "  Recording… [" .. macroRegs[slot] .. "]"
 end
 
 ---returns non-empty for status line plugins.
