@@ -11,7 +11,6 @@ local function isRecording() return fn.reg_recording() ~= "" end
 ---@param cmdStr any
 function normal(cmdStr) vim.cmd.normal { cmdStr, bang = true } end
 
-
 local macroRegs, slotIndex, logLevel
 local toggleKey, breakPointKey
 local M = {}
@@ -57,18 +56,17 @@ local function playRecording()
 	local reg = macroRegs[slotIndex]
 	local macro = getMacro(reg)
 	local hasBreakPoints = macro:find(vim.pesc(breakPointKey))
+	local countGiven = v.count ~= 0
 
 	-- empty slot
 	if macro == "" then
 		vim.notify("Macro Slot [" .. reg .. "] is empty.", logLevel)
 		return
 
-	-- with breakpoints 
-	elseif hasBreakPoints and v.count1 == 1 then
-
+	-- with breakpoints
+	elseif hasBreakPoints and not countGiven then
 		breakCounter = breakCounter + 1
 		local macroParts = vim.split(macro, breakPointKey, {})
-		vim.pretty_print(macroParts)
 		local partialMacro = macroParts[breakCounter]
 
 		-- play the partial macro
@@ -77,7 +75,7 @@ local function playRecording()
 		setMacro(reg, macro) -- restore original macro for all other purposes like prewing slots
 
 		if breakCounter ~= #macroParts then
-			vim.notify("Reached Breakpoint #"..tostring(breakCounter), logLevel)
+			vim.notify("Reached Breakpoint #" .. tostring(breakCounter), logLevel)
 		else
 			vim.notify("Reached end of macro.", logLevel)
 			breakCounter = 0
@@ -85,9 +83,7 @@ local function playRecording()
 
 	-- normal macro
 	else
-		if hasBreakPoints and v.count1 > 1 then
-			vim.notify("Ignoring breakpoints since using a count…", logLevel)	
-		end
+		if hasBreakPoints and countGiven then vim.notify("Ignoring breakpoints since using a count.", logLevel) end
 		normal(v.count1 .. "@" .. reg)
 	end
 end
@@ -159,7 +155,10 @@ function M.setup(config)
 	-- validation of slots
 	for _, reg in pairs(macroRegs) do
 		if not (reg:find("^%l$")) then
-			vim.notify("'" .. reg .. "' is an invalid slot. Choose only named registers (a-z).", vim.log.levels.ERROR)
+			vim.notify(
+				"'" .. reg .. "' is an invalid slot. Choose only named registers (a-z).",
+				vim.log.levels.ERROR
+			)
 			return
 		end
 	end
