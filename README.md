@@ -81,11 +81,11 @@ require("recorder").setup {
 ### Macro Breakpoints
 *nvim-recorder* allows you to set breakpoints in your macros which is helpful for debugging macros. Breakpoints are automatically ignored when you trigger a macro with a count.
 
-__Setting Breakpoints__
+__Setting Breakpoints__  
 1. *During a recording* press the `addBreakPoint` (default: `!`) key in normal mode. 
 2. *After a recording* use `editMacro` and add the `!` manually.
 
-__Playing Macros with Breakpoints__
+__Playing Macros with Breakpoints__  
 Using the `playMacro` key, the macro automatically stops at the next breakpoint. The next time you press `playMacro`, the next segment of the macro is played. 
 
 Starting a new recording, editing a macro, or switching macro slot all reset the sequence, meaning that `playMacro` starts from the beginning again.
@@ -93,7 +93,7 @@ Starting a new recording, editing a macro, or switching macro slot all reset the
 > __Note__  
 > You can also do other things in between playing segments of the macro, like moving a few characters to the left or right. That way you can also use breakpoints to manually correct things.
 
-__Counts: ignoring Breakpoints__
+__Counts: ignoring Breakpoints__  
 When you play the macro with a count (for example `50Q`), breakpoints are automatically ignored. *Tip*: add a count of 1 (`1Q`) to play a macro once and ignore any breakpoints.
 
 
