@@ -127,7 +127,7 @@ local function addBreakPoint()
 	elseif not isPlaying() and not dapBreakpoint then
 		vim.notify("Cannot insert breakpoint outside of a recording.", vim.log.levels.WARN)
 	elseif not isPlaying() and dapBreakpoint then
-		local dap = require("dap")
+		local dap = require("dap") -- only test for dap here to not interfere with user lazyloading
 		if dap then dap.toggle_breakpoint() end
 	end
 end
