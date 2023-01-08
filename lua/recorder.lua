@@ -122,7 +122,7 @@ end
 
 local function addBreakPoint()
 	if isRecording() then
-		-- nothing happens, but the key is still recorded in the macro
+		-- INFO nothing happens, but the key is still recorded in the macro
 		vim.notify("Macro breakpoint added.", logLevel)
 	elseif not isPlaying() and not dapBreakpoint then
 		vim.notify("Cannot insert breakpoint outside of a recording.", vim.log.levels.WARN)
