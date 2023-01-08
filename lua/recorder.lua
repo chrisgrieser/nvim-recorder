@@ -13,7 +13,7 @@ local function isPlaying() return fn.reg_executing() ~= "" end
 function normal(cmdStr) vim.cmd.normal { cmdStr, bang = true } end
 
 local macroRegs, slotIndex, logLevel
-local toggleKey, breakPointKey
+local toggleKey, breakPointKey, dapBreakpoint
 local M = {}
 
 local breakCounter = 0 -- resets break counter on plugin reload
@@ -124,8 +124,11 @@ local function addBreakPoint()
 	if isRecording() then
 		-- nothing happens, but the key is still recorded in the macro
 		vim.notify("Macro breakpoint added.", logLevel)
-	elseif not isPlaying() then
+	elseif not isPlaying() and not dapBreakpoint then
 		vim.notify("Cannot insert breakpoint outside of a recording.", vim.log.levels.WARN)
+	elseif not isPlaying() and dapBreakpoint then
+		local dap = require("dap")
+		if dap then dap.toggle_breakpoint() end
 	end
 end
 
@@ -138,6 +141,7 @@ end
 ---@field timeout number: Default timeout for notification
 ---@field mapping maps: individual mappings
 ---@field logLevel integer: log level (vim.log.levels)
+---@field dapBreakpoint boolean: outside a recording, the breakpoint key toggles a DAP breakpoint instead
 
 ---@class maps
 ---@field startStopRecording string
@@ -169,13 +173,16 @@ function M.setup(config)
 	local playKey = config.mapping.playMacro or "Q"
 	local editKey = config.mapping.editMacro or "cq"
 	local switchKey = config.mapping.switchSlot or "<C-q>"
-	breakPointKey = config.mapping.addBreakPoint or "!"
+	breakPointKey = config.mapping.addBreakPoint or "<C-b>"
 
 	keymap("n", toggleKey, toggleRecording, { desc = " Start/Stop Recording" })
 	keymap("n", playKey, playRecording, { desc = " Play Macro" })
 	keymap("n", editKey, editMacro, { desc = " Edit Macro" })
 	keymap("n", switchKey, switchMacroSlot, { desc = " Switch Macro Slot" })
-	keymap("n", breakPointKey, addBreakPoint, { desc = " Insert Macro Breakpoint." })
+
+	dapBreakpoint = config.dapBreakpoint or false
+	local desc = dapBreakpoint and "/ Breakpoint" or " Insert Macro Breakpoint."
+	keymap("n", breakPointKey, addBreakPoint, { desc = desc })
 
 	-- clearing
 	if config.clear then

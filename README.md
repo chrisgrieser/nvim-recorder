@@ -40,7 +40,7 @@ use {
 },
 ```
 
-Calling `setup()` is required.
+Calling `setup()` is __required__.
 
 ### Configuration
 
@@ -59,8 +59,11 @@ require("recorder").setup {
 		playMacro = "Q",
 		editMacro = "cq",
 		switchSlot = "<C-q>",
-		addBreakPoint = "!",
+		addBreakPoint = "<C-b>",
 	}
+
+	-- if true, `addBreakPoint` will trigger `dap.toggle_breakpoint()` outside a recording. During a recording, it will add a macro breakpoint
+	dapBreakpoint = false,
 
 	-- clear all macros on startup
 	clear = false,
