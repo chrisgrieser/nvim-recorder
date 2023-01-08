@@ -141,7 +141,7 @@ end
 ---@field timeout number: Default timeout for notification
 ---@field mapping maps: individual mappings
 ---@field logLevel integer: log level (vim.log.levels)
----@field dapBreakpoint boolean: outside a recording, the breakpoint key toggles a DAP breakpoint instead
+---@field dapBreakpoint boolean: if true, `addBreakPoint` will trigger `dap.toggle_breakpoint()` outside a recording. During a recording, it will add a macro breakpoint
 
 ---@class maps
 ---@field startStopRecording string
