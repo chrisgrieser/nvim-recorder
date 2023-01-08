@@ -170,13 +170,12 @@ function M.setup(config)
 	local editKey = config.mapping.editMacro or "cq"
 	local switchKey = config.mapping.switchSlot or "<C-q>"
 	breakPointKey = config.mapping.addBreakPoint or "!"
-	keymap("n", toggleKey, toggleRecording, { desc = "Start/stop recording to current macro slot." })
-	keymap("n", playKey, playRecording, { desc = "Play the current macro slot." })
-	keymap("n", editKey, editMacro, { desc = "Edit the macro in the current slot." })
-	keymap("n", switchKey, switchMacroSlot, { desc = "Edit the macro in the current slot." })
-	if breakPointKey then
-		keymap("n", breakPointKey, addBreakPoint, { desc = "Insert Break point during a recording." })
-	end
+
+	keymap("n", toggleKey, toggleRecording, { desc = " Start/Stop Recording" })
+	keymap("n", playKey, playRecording, { desc = " Play Macro" })
+	keymap("n", editKey, editMacro, { desc = " Edit Macro" })
+	keymap("n", switchKey, switchMacroSlot, { desc = " Switch Macro Slot" })
+	keymap("n", breakPointKey, addBreakPoint, { desc = " Insert Macro Breakpoint." })
 
 	-- clearing
 	if config.clear then
