@@ -13,7 +13,7 @@ local function isPlaying() return fn.reg_executing() ~= "" end
 function normal(cmdStr) vim.cmd.normal { cmdStr, bang = true } end
 
 local macroRegs, slotIndex, logLevel
-local toggleKey, breakPointKey, dapBreakpoint
+local toggleKey, breakPointKey, dapSharedKeymaps
 local M = {}
 
 local breakCounter = 0 -- resets break counter on plugin reload
@@ -54,6 +54,16 @@ end
 
 ---play the macro recorded in current slot
 local function playRecording()
+	-- WARN undocumented and prone to change https://github.com/mfussenegger/nvim-dap/discussions/810#discussioncomment-4623606
+	if dapSharedKeymaps then
+		-- nested to avoid requiring dap for lazyloading users
+		local dapBreakpointsExist = next(require("dap.breakpoints").get()) ~= nil
+		if dapBreakpointsExist then
+			require("dap").continue()
+			return
+		end
+	end
+
 	local reg = macroRegs[slotIndex]
 	local macro = getMacro(reg)
 	local hasBreakPoints = macro:find(vim.pesc(breakPointKey))
@@ -124,9 +134,9 @@ local function addBreakPoint()
 	if isRecording() then
 		-- INFO nothing happens, but the key is still recorded in the macro
 		vim.notify("Macro breakpoint added.", logLevel)
-	elseif not isPlaying() and not dapBreakpoint then
+	elseif not isPlaying() and not dapSharedKeymaps then
 		vim.notify("Cannot insert breakpoint outside of a recording.", vim.log.levels.WARN)
-	elseif not isPlaying() and dapBreakpoint then
+	elseif not isPlaying() and dapSharedKeymaps then
 		local dap = require("dap") -- only test for dap here to not interfere with user lazyloading
 		if dap then dap.toggle_breakpoint() end
 	end
@@ -141,7 +151,7 @@ end
 ---@field timeout number: Default timeout for notification
 ---@field mapping maps: individual mappings
 ---@field logLevel integer: log level (vim.log.levels)
----@field dapBreakpoint boolean: if true, `addBreakPoint` will trigger `dap.toggle_breakpoint()` outside a recording. During a recording, it will add a macro breakpoint
+---@field dapSharedKeymaps boolean (experimental) partially share keymaps with dap
 
 ---@class maps
 ---@field startStopRecording string
@@ -176,13 +186,20 @@ function M.setup(config)
 	breakPointKey = config.mapping.addBreakPoint or "<C-b>"
 
 	keymap("n", toggleKey, toggleRecording, { desc = " Start/Stop Recording" })
-	keymap("n", playKey, playRecording, { desc = " Play Macro" })
 	keymap("n", editKey, editMacro, { desc = " Edit Macro" })
 	keymap("n", switchKey, switchMacroSlot, { desc = " Switch Macro Slot" })
 
-	dapBreakpoint = config.dapBreakpoint or false
-	local desc = dapBreakpoint and "/ Breakpoint" or " Insert Macro Breakpoint."
-	keymap("n", breakPointKey, addBreakPoint, { desc = desc })
+	-- (experimental) if true, nvim-recorder and dap will use shared keymaps:
+	-- 1) `addBreakPoint` will map to `dap.toggle_breakpoint()` outside
+	-- a recording. During a recording, it will add a macro breakpoint instead.
+	-- 2) `playMacro` will map to `dap.continue()` if there is at least one
+	-- dap-breakpoint. If there is no dap breakpoint, will play the current
+	-- macro-slot instead
+	dapSharedKeymaps = config.dapSharedKeymaps or false
+	local desc1 = dapSharedKeymaps and "/ Breakpoint" or " Insert Macro Breakpoint."
+	keymap("n", breakPointKey, addBreakPoint, { desc = desc1 })
+	local desc2 = dapSharedKeymaps and "/ Continue/Play" or " Play Macro"
+	keymap("n", playKey, playRecording, { desc = desc2 })
 
 	-- clearing
 	if config.clear then

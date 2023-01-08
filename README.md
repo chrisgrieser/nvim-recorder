@@ -59,17 +59,22 @@ require("recorder").setup {
 		playMacro = "Q",
 		editMacro = "cq",
 		switchSlot = "<C-q>",
-		addBreakPoint = "<C-b>",
+		addBreakPoint = "#",
 	}
-
-	-- if true, `addBreakPoint` will trigger `dap.toggle_breakpoint()` outside a recording. During a recording, it will add a macro breakpoint
-	dapBreakpoint = false,
 
 	-- clear all macros on startup
 	clear = false,
 
 	-- log level used for any notification. Mostly relevant for nvim-notify. (Note that by default, nvim-notify only shows levels 2 and higher.)
 	logLevel = vim.log.levels.INFO,
+
+	-- (experimental) if true, nvim-recorder and dap will use shared keymaps:
+	-- 1) `addBreakPoint` will map to `dap.toggle_breakpoint()` outside
+	-- a recording. During a recording, it will add a macro breakpoint instead.
+	-- 2) `playMacro` will map to `dap.continue()` if there is at least one
+	-- dap-breakpoint. If there is no dap breakpoint, will play the current
+	-- macro-slot instead
+	dapSharedKeymaps = false,
 }
 ```
 
@@ -106,7 +111,7 @@ When you play the macro with a *count* (for example `50Q`), breakpoints are auto
 -- indicates whether you are currently recording. Useful if you are using `cmdheight=0`, where recording-status is not visible.
 require("recorder").recordingStatus()
 
--- displays non-empty macro-slots (registers) and indicates the selected ones. Only displayed when *not* recording. Slots with breakpoints get an extra `!`.
+-- displays non-empty macro-slots (registers) and indicates the selected ones. Only displayed when *not* recording. Slots with breakpoints get an extra `#`.
 -- Recommendation: use with the config `clear = true`
 require("recorder").displaySlots()
 ```
