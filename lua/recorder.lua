@@ -63,8 +63,14 @@ local function playRecording()
 			return
 		end
 	end
-
 	local reg = macroRegs[slotIndex]
+	if isRecording() then
+		vim.notify("Playing the macro while it is recording would cause recursion problems. Aborting recording.", vim.log.levels.ERROR)
+		normal("q") -- end recording
+		setMacro(reg, "") -- empties macro since the recursion has been recorded there
+		return
+	end
+
 	local macro = getMacro(reg)
 	local hasBreakPoints = macro:find(vim.pesc(breakPointKey))
 	local countGiven = v.count ~= 0
