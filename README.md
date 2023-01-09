@@ -11,6 +11,7 @@ Enhance the usage of macros in Neovim.
 	- [Basics](#basics)
 	- [Macro Breakpoints](#macro-breakpoints)
 - [Status Line Components](#status-line-components)
+- [Limitations](#limitations)
 - [About me](#about-me)
 <!--toc:end-->
 
@@ -126,6 +127,9 @@ lualine_z = {
 	{ require("recorder").recordingStatus },
 },
 ```
+
+## Limitations
+The plugin does not support recursive macros ( = macros played during macros). 
 
 <!-- vale Google.FirstPerson = NO -->
 ## About me
