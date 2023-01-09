@@ -1,4 +1,4 @@
-*recorder.txt*           For NVIM v0.8.0          Last change: 2023 January 08
+*recorder.txt*           For NVIM v0.8.0          Last change: 2023 January 09
 
 ==============================================================================
 Table of Contents                                 *recorder-table-of-contents*
@@ -8,6 +8,7 @@ Table of Contents                                 *recorder-table-of-contents*
   - Setup                                                     |recorder-setup|
   - Usage                                                     |recorder-usage|
   - Status Line Components                   |recorder-status-line-components|
+  - Limitations                                         |recorder-limitations|
   - About me                                               |recorder-about-me|
 
 ==============================================================================
@@ -24,6 +25,7 @@ Enhance the usage of macros in Neovim.
     - |recorder-basics|
     - |recorder-macro-breakpoints|
 - |recorder-status-line-components|
+- |recorder-limitations|
 - |recorder-about-me|
     <!--toc:end-->
 
@@ -159,6 +161,10 @@ Example for adding the status line components to lualine
     },
 <
 
+
+LIMITATIONS                                             *recorder-limitations*
+
+The plugin does not support recursive macros ( = macros played during macros).
 
 ABOUT ME                                                   *recorder-about-me*
 
