@@ -7,10 +7,10 @@ Enhance the usage of macros in Neovim.
 - [Setup](#setup)
 	- [Installation](#installation)
 	- [Configuration](#configuration)
+	- [Status Line Components](#status-line-components)
 - [Usage](#usage)
 	- [Basics](#basics)
 	- [Macro Breakpoints](#macro-breakpoints)
-- [Status Line Components](#status-line-components)
 - [About me](#about-me)
 <!--toc:end-->
 
@@ -72,11 +72,39 @@ require("recorder").setup {
 }
 ```
 
+If you want to handle multiple macros or use `cmdheight=0`, it is recommended to also set up the status line components.
+
+### Status Line Components
+
+```lua
+-- indicates whether you are currently recording. Useful if you are using 
+-- `cmdheight=0`, where recording-status is not visible.
+require("recorder").recordingStatus()
+
+-- displays non-empty macro-slots (registers) and indicates the selected ones. 
+-- Only displayed when *not* recording. Slots with breakpoints get an extra `#`.
+-- Recommendation: use with the config `clear = true`
+require("recorder").displaySlots()
+```
+
+Example for adding the status line components to [lualine](https://github.com/nvim-lualine/lualine.nvim):
+
+```lua
+-- Tip: put the components in different status line segments so they have 
+-- a different color, making the recording status more distinguishable
+lualine_y = {
+	{ require("recorder").displaySlots },
+},
+lualine_z = {
+	{ require("recorder").recordingStatus },
+},
+```
+
 ## Usage
 
 ### Basics
 - `startStopRecording`: Starts recording to the current macro slot (so you do not need to specify a register). Press again to end the recording.
-- `switchSlot`: Cycles through the registers you specified in the configuration. Also show a notice with that macro's content.
+- `switchSlot`: Cycles through the registers you specified in the configuration. Also show a notification with the slot and its content. (The currently selected slot can be seen in the [status line component](#status-line-components). )
 - `editMacro`: Lets you modify the macro recorded in the active slot.
 - `playMacro`: Plays the macro in the current slot (without the need to specify a register).
 
@@ -111,31 +139,6 @@ macro-slot instead.
 
 Note that this feature is experimental, since the [respective API from nvim-dap is non-public and can be changed without deprecation notice](https://github.com/mfussenegger/nvim-dap/discussions/810#discussioncomment-4623606).
 
-## Status Line Components
-
-```lua
--- indicates whether you are currently recording. Useful if you are using 
--- `cmdheight=0`, where recording-status is not visible.
-require("recorder").recordingStatus()
-
--- displays non-empty macro-slots (registers) and indicates the selected ones. 
--- Only displayed when *not* recording. Slots with breakpoints get an extra `#`.
--- Recommendation: use with the config `clear = true`
-require("recorder").displaySlots()
-```
-
-Example for adding the status line components to [lualine](https://github.com/nvim-lualine/lualine.nvim):
-
-```lua
--- Tip: put the components in different status line segments so they have 
--- a different color, making the recording status more distinguishable
-lualine_y = {
-	{ require("recorder").displaySlots },
-},
-lualine_z = {
-	{ require("recorder").recordingStatus },
-},
-```
 
 <!-- vale Google.FirstPerson = NO -->
 ## About me
