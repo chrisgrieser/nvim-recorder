@@ -7,7 +7,6 @@ Table of Contents                                 *recorder-table-of-contents*
   - Features                                               |recorder-features|
   - Setup                                                     |recorder-setup|
   - Usage                                                     |recorder-usage|
-  - Status Line Components                   |recorder-status-line-components|
   - About me                                               |recorder-about-me|
 
 ==============================================================================
@@ -20,10 +19,10 @@ Enhance the usage of macros in Neovim.
 - |recorder-setup|
     - |recorder-installation|
     - |recorder-configuration|
+    - |recorder-status-line-components|
 - |recorder-usage|
     - |recorder-basics|
     - |recorder-macro-breakpoints|
-- |recorder-status-line-components|
 - |recorder-about-me|
     <!--toc:end-->
 
@@ -95,13 +94,45 @@ CONFIGURATION ~
 <
 
 
+If you want to handle multiple macros or use `cmdheight=0`, it is recommended
+to also set up the status line components.
+
+STATUS LINE COMPONENTS ~
+
+>
+    -- indicates whether you are currently recording. Useful if you are using 
+    -- `cmdheight=0`, where recording-status is not visible.
+    require("recorder").recordingStatus()
+    
+    -- displays non-empty macro-slots (registers) and indicates the selected ones. 
+    -- Only displayed when *not* recording. Slots with breakpoints get an extra `#`.
+    -- Recommendation: use with the config `clear = true`
+    require("recorder").displaySlots()
+<
+
+
+Example for adding the status line components to lualine
+<https://github.com/nvim-lualine/lualine.nvim>:
+
+>
+    -- Tip: put the components in different status line segments so they have 
+    -- a different color, making the recording status more distinguishable
+    lualine_y = {
+        { require("recorder").displaySlots },
+    },
+    lualine_z = {
+        { require("recorder").recordingStatus },
+    },
+<
+
+
 USAGE                                                         *recorder-usage*
 
 BASICS ~
 
 
 - `startStopRecording`: Starts recording to the current macro slot (so you do not need to specify a register). Press again to end the recording.
-- `switchSlot`: Cycles through the registers you specified in the configuration. Also show a notice with that macro’s content.
+- `switchSlot`: Cycles through the registers you specified in the configuration. Also show a notification with the slot and its content. (The currently selected slot can be seen in the |recorder-status-line-component|. )
 - `editMacro`: Lets you modify the macro recorded in the active slot.
 - `playMacro`: Plays the macro in the current slot (without the need to specify a register).
 
@@ -149,35 +180,6 @@ macro-slot instead.
 Note that this feature is experimental, since the respective API from nvim-dap
 is non-public and can be changed without deprecation notice
 <https://github.com/mfussenegger/nvim-dap/discussions/810#discussioncomment-4623606>.
-
-STATUS LINE COMPONENTS                       *recorder-status-line-components*
-
->
-    -- indicates whether you are currently recording. Useful if you are using 
-    -- `cmdheight=0`, where recording-status is not visible.
-    require("recorder").recordingStatus()
-    
-    -- displays non-empty macro-slots (registers) and indicates the selected ones. 
-    -- Only displayed when *not* recording. Slots with breakpoints get an extra `#`.
-    -- Recommendation: use with the config `clear = true`
-    require("recorder").displaySlots()
-<
-
-
-Example for adding the status line components to lualine
-<https://github.com/nvim-lualine/lualine.nvim>:
-
->
-    -- Tip: put the components in different status line segments so they have 
-    -- a different color, making the recording status more distinguishable
-    lualine_y = {
-        { require("recorder").displaySlots },
-    },
-    lualine_z = {
-        { require("recorder").recordingStatus },
-    },
-<
-
 
 ABOUT ME                                                   *recorder-about-me*
 
