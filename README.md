@@ -15,8 +15,8 @@ Enhance the usage of macros in Neovim.
 <!--toc:end-->
 
 ## Features
-- __Simplified controls__: One key to start and stop recording, a second key for playing the macro. Instead of `qa … q @a @@`, you just do `q … q Q Q`.
-- __Macro Breakpoints__ for easier debugging of macros. Breakpoints can also be set after the recording, and are automatically ignored when triggering a macro with a count.
+- __Simplified controls__: One key to start and stop recording, a second key for playing the macro. Instead of `qa … q @a @@`, you just do `q … q Q Q`.[^1]
+- __Macro Breakpoints__ for easier debugging of macros. Breakpoints can also be set after the recording and are automatically ignored when triggering a macro with a count.
 - __Status line components__: Particularly useful if you use `cmdheight=0` where the recording status is not visible.
 - __Various quality-of-life features__ like notifications with macro content, the ability to cancel a recording, or a command to edit macros.
 - Uses up-to-date nvim features like `vim.ui.input` or `vim.notify`. This means you can get confirmation notices with plugins like [nvim-notify](https://github.com/rcarriga/nvim-notify).
@@ -84,7 +84,7 @@ require("recorder").setup {
 - `playMacro`: plays the macro in the current slot, no need to specify a register.
 
 > __Note__  
-> For recursive macros (playing a macro inside a macro), you can still use the default command `@a`, where `a` is the name of the macro slot (register).
+> For recursive macros (playing a macro inside a macro), you can still use the default command `@a`.
 
 ### Macro Breakpoints
 *nvim-recorder* allows you to set breakpoints in your macros which can be helpful for debugging macros. Breakpoints are automatically ignored when you trigger the macro with a count.
@@ -148,3 +148,5 @@ __Profiles__
 - [Twitter](https://twitter.com/pseudo_meta)
 - [ResearchGate](https://www.researchgate.net/profile/Christopher-Grieser)
 - [LinkedIn](https://www.linkedin.com/in/christopher-grieser-ba693b17a/)
+
+[^1]: Yes, as opposed to vim, neovim allows you to use `Q` already to [play the last recorded macro](https://neovim.io/doc/user/repeat.html#Q). Considering this, the simplified controls really only save you one keystroke for one-off macros. However, as opposed to neovim's built-in controls, you can still keep using `Q` for playing the not-most-recently recorded macro.
