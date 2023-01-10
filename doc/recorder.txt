@@ -31,9 +31,9 @@ Enhance the usage of macros in Neovim.
 FEATURES                                                   *recorder-features*
 
 
-- **Simplified controls**: One key to start and stop recording, a second key for playing the macro. Instead of `qa … q @a @@`, you just do `q … q Q Q`.As opposed to vim, neovim allows you to use `Q` already to |play the last
+- **Simplified controls**: One key to start and stop recording, a second key for playing the macro. Instead of `qa … q @a @@`, you just do `q … q Q Q`.As opposed to vim, Neovim already allows you to use `Q` to |play the last
     recorded macro|. Considering this, the simplified controls really only save you
-    one keystroke for one-off macros. However, as opposed to neovim’s built-in
+    one keystroke for one-off macros. However, as opposed to Neovim’s built-in
     controls, you can still keep using `Q` for playing the not-most-recently
     recorded macro.
 - **Macro Breakpoints** for easier debugging of macros. Breakpoints can also be set after the recording and are automatically ignored when triggering a macro with a count.
