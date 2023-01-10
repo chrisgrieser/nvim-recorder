@@ -15,10 +15,10 @@ Enhance the usage of macros in Neovim.
 <!--toc:end-->
 
 ## Features
-- __Simplified controls__: One key to start and stop recording, a second key for playing the macro. Instead of `qa … q @a @@`, you just do `q … q Q Q`
-- __[Macro Breakpoints](#macro-breakpoints)__ for easier debugging of macros. Breakpoints can also be set after the recording, and are ignored when triggering a macro with a count.
-- __Status line components__: Particularly useful if you use `cmdheight=0`.
-- Various quality-of-life features like notifications with macro content, the ability to cancel a recording, or a command to edit macros.
+- __Simplified controls__: One key to start and stop recording, a second key for playing the macro. Instead of `qa … q @a @@`, you just do `q … q Q Q`.
+- __Macro Breakpoints__ for easier debugging of macros. Breakpoints can also be set after the recording, and are automatically ignored when triggering a macro with a count.
+- __Status line components__: Particularly useful if you use `cmdheight=0` where the recording status is not visible.
+- __Various quality-of-life features__ like notifications with macro content, the ability to cancel a recording, or a command to edit macros.
 - Uses up-to-date nvim features like `vim.ui.input` or `vim.notify`. This means you can get confirmation notices with plugins like [nvim-notify](https://github.com/rcarriga/nvim-notify).
 - Written 100% in lua. Lightweight (~250 LoC).
 
