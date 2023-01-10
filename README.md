@@ -65,12 +65,7 @@ require("recorder").setup {
 	-- log level used for any notification. Mostly relevant for nvim-notify. (Note that by default, nvim-notify only shows levels 2 and higher.)
 	logLevel = vim.log.levels.INFO,
 
-	-- (experimental) if true, nvim-recorder and dap will use shared keymaps:
-	-- 1) `addBreakPoint` will map to `dap.toggle_breakpoint()` outside
-	-- a recording. During a recording, it will add a macro breakpoint instead.
-	-- 2) `playMacro` will map to `dap.continue()` if there is at least one
-	-- dap-breakpoint. If there is no dap breakpoint, will play the current
-	-- macro-slot instead.
+	-- (experimental) see README 
 	dapSharedKeymaps = false,
 }
 ```
@@ -105,11 +100,11 @@ __Ignoring Breakpoints__
 When you play the macro with a *count* (for example `50Q`), breakpoints are automatically ignored. *Tip*: add a count of 1 (`1Q`) to play a macro once and ignore any breakpoints.
 
 __Shared Keybindings with nvim-dap__
-If you are also using [nvim-dap](https://github.com/mfussenegger/nvim-dap), you can use `dapSharedKeymaps = true` to set up shared keybindings:
-1. `addBreakPoint` will map to `dap.toggle_breakpoint()` outside
-a recording. During a recording, it will add a macro breakpoint instead.
-2. `playMacro` will map to `dap.continue()` if there is at least one
-dap-breakpoint. If there is no dap breakpoint, will play the current
+If you are also using [nvim-dap](https://github.com/mfussenegger/nvim-dap), you can use `dapSharedKeymaps = true` to set up the following shared keybindings:
+1. `addBreakPoint` maps to `dap.toggle_breakpoint()` outside
+a recording. During a recording, it adds a macro breakpoint instead.
+2. `playMacro` maps to `dap.continue()` if there is at least one
+dap-breakpoint. If there is no dap breakpoint, plays the current
 macro-slot instead.
 
 Note that this feature is experimental, since the [respective API from nvim-dap is non-public and can be changed without deprecation notice](https://github.com/mfussenegger/nvim-dap/discussions/810#discussioncomment-4623606).
