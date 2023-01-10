@@ -11,17 +11,16 @@ Enhance the usage of macros in Neovim.
 	- [Basics](#basics)
 	- [Macro Breakpoints](#macro-breakpoints)
 - [Status Line Components](#status-line-components)
-- [Limitations](#limitations)
 - [About me](#about-me)
 <!--toc:end-->
 
 ## Features
-- Simplifies recording macros, especially for one-off macros. No need to remember the register where a macro has been saved to.
-- Add [breakpoints to your macros](#macro-breakpoints) for easier debugging of macros. Breakpoints can also be set after the recording, and are ignored when triggering a macro with a count.
-- Status line components. Particularly useful if you use `cmdheight=0`.
-- Some quality-of-life features like notifications with macro content, the ability to cancel a recording, or a command to edit macros.
+- __Simplified controls__: One key to start and stop recording, a second key for playing the macro. Instead of `qa … q @a @@`, you just do `q … q Q Q`
+- __[Macro Breakpoints](#macro-breakpoints)__ for easier debugging of macros. Breakpoints can also be set after the recording, and are ignored when triggering a macro with a count.
+- __Status line components__: Particularly useful if you use `cmdheight=0`.
+- Various quality-of-life features like notifications with macro content, the ability to cancel a recording, or a command to edit macros.
 - Uses up-to-date nvim features like `vim.ui.input` or `vim.notify`. This means you can get confirmation notices with plugins like [nvim-notify](https://github.com/rcarriga/nvim-notify).
-- Written 100% in lua. Lightweight wrapper (~250 LoC) around the built-in macro-feature.
+- Written 100% in lua. Lightweight (~250 LoC).
 
 ## Setup
 
@@ -48,13 +47,10 @@ Calling `setup()` is __required__.
 ```lua
 -- default values
 require("recorder").setup {
-	-- Named registers where macros are saved. 
-	-- First register is the default register/macro-slot used after startup. 
-	-- Be aware that vim saves macros in registers, so using a register inside a 
-	-- macro will cause trouble.
+	-- Named registers where macros are saved. The first register is the default register/macro-slot used after startup. (Remember that vim saves macros in registers.)
 	slots = {"a", "b"},
 
-	-- Default Mappings
+	-- Default keymaps
 	mapping = {
 		startStopRecording = "q",
 		playMacro = "Q",
@@ -63,7 +59,7 @@ require("recorder").setup {
 		addBreakPoint = "#",
 	}
 
-	-- clear all macros on startup
+	-- clear all macros (registers) on startup
 	clear = false,
 
 	-- log level used for any notification. Mostly relevant for nvim-notify. (Note that by default, nvim-notify only shows levels 2 and higher.)
@@ -74,7 +70,7 @@ require("recorder").setup {
 	-- a recording. During a recording, it will add a macro breakpoint instead.
 	-- 2) `playMacro` will map to `dap.continue()` if there is at least one
 	-- dap-breakpoint. If there is no dap breakpoint, will play the current
-	-- macro-slot instead
+	-- macro-slot instead.
 	dapSharedKeymaps = false,
 }
 ```
@@ -87,8 +83,11 @@ require("recorder").setup {
 - `editMacro`: lets you modify the macro recorded in the active slot.
 - `playMacro`: plays the macro in the current slot, no need to specify a register.
 
+> __Note__  
+> For recursive macros (playing a macro inside a macro), you can still use the default command `@a`, where `a` is the name of the macro slot (register).
+
 ### Macro Breakpoints
-*nvim-recorder* allows you to set breakpoints in your macros which can be helpful for debugging macros. Breakpoints are automatically ignored when you trigger a macro with a count.
+*nvim-recorder* allows you to set breakpoints in your macros which can be helpful for debugging macros. Breakpoints are automatically ignored when you trigger the macro with a count.
 
 __Setting Breakpoints__  
 1. *During a recording* press the `addBreakPoint` key (default: `#`) in normal mode. 
@@ -100,11 +99,20 @@ Using the `playMacro` key, the macro automatically stops at the next breakpoint.
 Starting a new recording, editing a macro, or switching macro slot all reset the sequence, meaning that `playMacro` starts from the beginning again.
 
 > __Note__  
-> You can also do other things in between playing segments of the macro, like moving a few characters to the left or right. That way you can also use breakpoints to manually correct things.
+> You can do other things in between playing segments of the macro, like moving a few characters to the left or right. That way you can also use breakpoints to manually correct irregularities.
 
 __Ignoring Breakpoints__  
 When you play the macro with a *count* (for example `50Q`), breakpoints are automatically ignored. *Tip*: add a count of 1 (`1Q`) to play a macro once and ignore any breakpoints.
 
+__Shared Keybindings with nvim-dap__
+If you are also using [nvim-dap](https://github.com/mfussenegger/nvim-dap), you can use `dapSharedKeymaps = true` to set up shared keybindings:
+1. `addBreakPoint` will map to `dap.toggle_breakpoint()` outside
+a recording. During a recording, it will add a macro breakpoint instead.
+2. `playMacro` will map to `dap.continue()` if there is at least one
+dap-breakpoint. If there is no dap breakpoint, will play the current
+macro-slot instead.
+
+Note that this feature is experimental, since the [respective API from nvim-dap is non-public and can be changed without deprecation notice](https://github.com/mfussenegger/nvim-dap/discussions/810#discussioncomment-4623606).
 
 ## Status Line Components
 
@@ -120,6 +128,7 @@ require("recorder").displaySlots()
 Example for adding the status line components to [lualine](https://github.com/nvim-lualine/lualine.nvim):
 
 ```lua
+-- Tip: put the components in different status line segments so they have different color, making the recording status more distinguishable
 lualine_y = {
 	{ require("recorder").displaySlots },
 },
@@ -127,9 +136,6 @@ lualine_z = {
 	{ require("recorder").recordingStatus },
 },
 ```
-
-## Limitations
-The plugin does not support recursive macros ( = macros played during macros). 
 
 <!-- vale Google.FirstPerson = NO -->
 ## About me
