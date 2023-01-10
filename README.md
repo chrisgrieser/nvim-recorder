@@ -149,4 +149,4 @@ __Profiles__
 - [ResearchGate](https://www.researchgate.net/profile/Christopher-Grieser)
 - [LinkedIn](https://www.linkedin.com/in/christopher-grieser-ba693b17a/)
 
-[^1]: As opposed to vim, neovim allows you to use `Q` already to [play the last recorded macro](https://neovim.io/doc/user/repeat.html#Q). Considering this, the simplified controls really only save you one keystroke for one-off macros. However, as opposed to neovim's built-in controls, you can still keep using `Q` for playing the not-most-recently recorded macro.
+[^1]: As opposed to vim, Neovim already allows you to use `Q` to [play the last recorded macro](https://neovim.io/doc/user/repeat.html#Q). Considering this, the simplified controls really only save you one keystroke for one-off macros. However, as opposed to Neovim's built-in controls, you can still keep using `Q` for playing the not-most-recently recorded macro.
