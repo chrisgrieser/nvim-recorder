@@ -67,7 +67,7 @@ require("recorder").setup {
 	-- (Note that by default, nvim-notify does not show the levels trace and debug.)
 	logLevel = vim.log.levels.INFO,
 
-	-- experimental. See README.
+	-- experimental, see README
 	dapSharedKeymaps = false,
 }
 ```
@@ -83,7 +83,7 @@ require("recorder").recordingStatus()
 
 -- displays non-empty macro-slots (registers) and indicates the selected ones. 
 -- Only displayed when *not* recording. Slots with breakpoints get an extra `#`.
--- Recommendation: use with the config `clear = true` to see whether you have any recordings
+-- 💡 use with the config `clear = true` to see recordings you made this session.
 require("recorder").displaySlots()
 ```
 
@@ -96,7 +96,7 @@ lualine_y = {
 lualine_z = {
 	{ require("recorder").recordingStatus },
 },
--- Tip: put the components in different status line segments so they have 
+-- 💡 put the components in different status line segments so they have 
 -- a different color, making the recording status more distinguishable
 ```
 
@@ -108,8 +108,7 @@ lualine_z = {
 - `editMacro`: Lets you modify the macro recorded in the active slot.
 - `playMacro`: Plays the macro in the current slot (without the need to specify a register).
 
-> __Note__  
-> For recursive macros (playing a macro inside a macro), you can still use the default command `@a`.
+> 💡 For recursive macros (playing a macro inside a macro), you can still use the default command `@a`.
 
 ### Macro Breakpoints
 *nvim-recorder* allows you to set breakpoints in your macros which can be helpful for debugging macros. Breakpoints are automatically ignored when you trigger the macro with a count.
