@@ -171,11 +171,11 @@ end
 -- CONFIG
 
 ---@class configObj
----@field slots table<string>: named register slots
----@field clear boolean: whether to clear slots/registers on setup
----@field timeout number: Default timeout for notification
----@field mapping maps: individual mappings
----@field logLevel integer: log level (vim.log.levels)
+---@field slots table<string> named register slots
+---@field clear boolean whether to clear slots/registers on setup
+---@field timeout number Default timeout for notification
+---@field mapping maps individual mappings
+---@field logLevel integer log level (vim.log.levels)
 ---@field dapSharedKeymaps boolean (experimental) partially share keymaps with dap
 
 ---@class maps
