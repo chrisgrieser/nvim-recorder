@@ -18,6 +18,7 @@ Enhance the usage of macros in Neovim.
 - __Simplified controls__: One key to start and stop recording, a second key for playing the macro. Instead of `qa … q @a @@`, you just do `q … q Q Q`.[^1]
 - __Macro Breakpoints__ for easier debugging of macros. Breakpoints can also be set after the recording and are automatically ignored when triggering a macro with a count.
 - __Status line components__: Particularly useful if you use `cmdheight=0` where the recording status is not visible.
+- __Macro-to-Mapping__: Copy a macro in decoded form for mappings to your default register.
 - __Various quality-of-life features__ like notifications with macro content, the ability to cancel a recording, or a command to edit macros.
 - Uses up-to-date nvim features like `vim.ui.input` or `vim.notify`. This means you can get confirmation notices with plugins like [nvim-notify](https://github.com/rcarriga/nvim-notify).
 - Written 100% in lua. Lightweight (~250 LoC).
@@ -51,20 +52,21 @@ require("recorder").setup {
 	-- register/macro-slot used after startup. 
 	slots = {"a", "b"},
 
-	-- Default keymaps
+	-- default keymaps, see README for description what the commands do
 	mapping = {
 		startStopRecording = "q",
 		playMacro = "Q",
-		editMacro = "cq",
 		switchSlot = "<C-q>",
+		editMacro = "cq",
+		yankMacro = "yq", -- also decodes it for turning macros to mappings
 		addBreakPoint = "#",
 	}
 
-	-- clear all macros-slots on startup
+	-- clears all macros-slots on startup
 	clear = false,
 
-	-- log level used for any notification. Mostly relevant for nvim-notify.
-	-- (Note that by default, nvim-notify does not show the levels trace and debug.)
+	-- log level used for any notification, mostly relevant for nvim-notify
+	-- (note that by default, nvim-notify does not show the levels trace and debug.)
 	logLevel = vim.log.levels.INFO,
 
 	-- experimental, see README
@@ -104,9 +106,10 @@ lualine_z = {
 
 ### Basics
 - `startStopRecording`: Starts recording to the current macro slot (so you do not need to specify a register). Press again to end the recording.
-- `switchSlot`: Cycles through the registers you specified in the configuration. Also show a notification with the slot and its content. (The currently selected slot can be seen in the [status line component](#status-line-components). )
-- `editMacro`: Lets you modify the macro recorded in the active slot.
 - `playMacro`: Plays the macro in the current slot (without the need to specify a register).
+- `switchSlot`: Cycles through the registers you specified in the configuration. Also show a notification with the slot and its content. (The currently selected slot can be seen in the [status line component](#status-line-components). )
+- `editMacro`: Lets you modify the macro recorded in the active slot. (Be aware that these are the keystrokes in "encoded" form.)
+- `yankMacro`: Copies the current macro in decoded form that can be used to create a mapping from it.
 
 > 💡 For recursive macros (playing a macro inside a macro), you can still use the default command `@a`.
 
@@ -119,13 +122,14 @@ __Setting Breakpoints__
 
 __Playing Macros with Breakpoints__  
 - Using the `playMacro` key, the macro automatically stops at the next breakpoint. The next time you press `playMacro`, the next segment of the macro is played. 
-- Starting a new recording, editing a macro, or switching macro slot all reset the sequence, meaning that `playMacro` starts from the beginning again.
-- You can do other things in between playing segments of the macro, like moving a few characters to the left or right. That way you can also use breakpoints to manually correct irregularities.
+- Starting a new recording, editing a macro, yanking a macro, or switching macro slot all reset the sequence, meaning that `playMacro` starts from the beginning again.
+
+> 💡 You can do other things in between playing segments of the macro, like moving a few characters to the left or right. That way you can also use breakpoints to manually correct irregularities.
 
 __Ignoring Breakpoints__  
 When you play the macro with a *count* (for example `50Q`), breakpoints are automatically ignored. 
 
-> 💡 add a count of 1 (`1Q`) to play a macro once and still ignore breakpoints.
+> 💡 Add a count of 1 (`1Q`) to play a macro once and still ignore breakpoints.
 
 __Shared Keybindings with nvim-dap__  
 If you are using [nvim-dap](https://github.com/mfussenegger/nvim-dap), you can use `dapSharedKeymaps = true` to set up the following shared keybindings:

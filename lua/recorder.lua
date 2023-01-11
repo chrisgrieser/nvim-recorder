@@ -40,10 +40,11 @@ local function toggleRecording()
 	-- NOTE the macro key records itself, so it has to be removed from the
 	-- register. As this function has to know the variable length of the
 	-- LHS key that triggered it, it has to be passed in via .setup()-function
-	local recording = getMacro(reg):sub(1, -1 * (#toggleKey + 1))
+	local decodedToggleKey = fn.keytrans(toggleKey)
+	local recording = getMacro(reg):sub(1, -1 * (#decodedToggleKey + 1))
 	setMacro(reg, recording)
 
-	local justRecorded = getMacro(reg)
+	local justRecorded = fn.keytrans(getMacro(reg))
 	if justRecorded == "" then
 		setMacro(reg, prevRec)
 		vim.notify("Recording aborted.\n(Previous recording is kept.)", logLevel)
@@ -56,7 +57,7 @@ end
 local function playRecording()
 	-- WARN undocumented and prone to change https://github.com/mfussenegger/nvim-dap/discussions/810#discussioncomment-4623606
 	if dapSharedKeymaps then
-		-- nested to avoid requiring dap for lazyloading users
+		-- nested to avoid requiring dap for lazyloaders
 		local dapBreakpointsExist = next(require("dap.breakpoints").get()) ~= nil
 		if dapBreakpointsExist then
 			require("dap").continue()
@@ -110,8 +111,9 @@ local function switchMacroSlot()
 	breakCounter = 0 -- reset breakpoint counter
 
 	if slotIndex > #macroRegs then slotIndex = 1 end
-	local currentMacro = getMacro(macroRegs[slotIndex])
-	local msg = " Now using macro slot [" .. macroRegs[slotIndex] .. "]"
+	local reg = macroRegs[slotIndex]
+	local currentMacro = fn.keytrans(getMacro(reg))
+	local msg = " Now using macro slot [" .. reg .. "]"
 	if currentMacro ~= "" then
 		msg = msg .. ".\n" .. currentMacro
 	else
@@ -132,8 +134,25 @@ local function editMacro()
 	vim.ui.input(inputConfig, function(editedMacro)
 		if not editedMacro then return end -- cancellation
 		setMacro(reg, editedMacro)
-		vim.notify("Edited Macro [" .. reg .. "]\n" .. editedMacro, logLevel)
+		vim.notify("Edited Macro [" .. reg .. "]:\n" .. editedMacro, logLevel)
 	end)
+end
+
+local function yankMacro()
+	breakCounter = 0 
+	local reg = macroRegs[slotIndex]
+	local macroContent = getMacro(reg)
+	if macroContent == "" then
+		vim.notify("Nothing to copy, macro slot [" .. reg .. "] is still empty.", logLevel)
+		return
+	end
+
+	local clipboardOpt = vim.opt.clipboard:get()
+	local useSystemClipb = #clipboardOpt > 0 and clipboardOpt[1]:find("unnamed")
+	local copyToReg = useSystemClipb and '+' or '"'
+
+	fn.setreg(copyToReg, fn.keytrans(macroContent))
+	vim.notify("Copied Macro [" .. reg .. "]:\n" .. macroContent, logLevel)
 end
 
 local function addBreakPoint()
@@ -143,8 +162,8 @@ local function addBreakPoint()
 	elseif not isPlaying() and not dapSharedKeymaps then
 		vim.notify("Cannot insert breakpoint outside of a recording.", vim.log.levels.WARN)
 	elseif not isPlaying() and dapSharedKeymaps then
-		local dap = require("dap") -- only test for dap here to not interfere with user lazyloading
-		if dap then dap.toggle_breakpoint() end
+		-- only test for dap here to not interfere with user lazyloading
+		if require("dap") then require("dap").toggle_breakpoint() end
 	end
 end
 
@@ -163,6 +182,7 @@ end
 ---@field startStopRecording string
 ---@field playMacro string
 ---@field editMacro string
+---@field yankMacro string
 ---@field switchSlot string
 ---@field addBreakPoint string
 
@@ -187,13 +207,15 @@ function M.setup(config)
 	-- set keymaps
 	toggleKey = config.mapping.startStopRecording or "q"
 	local playKey = config.mapping.playMacro or "Q"
-	local editKey = config.mapping.editMacro or "cq"
 	local switchKey = config.mapping.switchSlot or "<C-q>"
+	local editKey = config.mapping.editMacro or "cq"
+	local yankKey = config.mapping.yankMacro or "yq"
 	breakPointKey = config.mapping.addBreakPoint or "<C-b>"
 
 	keymap("n", toggleKey, toggleRecording, { desc = " Start/Stop Recording" })
-	keymap("n", editKey, editMacro, { desc = " Edit Macro" })
 	keymap("n", switchKey, switchMacroSlot, { desc = " Switch Macro Slot" })
+	keymap("n", editKey, editMacro, { desc = " Edit Macro" })
+	keymap("n", yankKey, yankMacro, { desc = " Yank Macro" })
 
 	-- (experimental) if true, nvim-recorder and dap will use shared keymaps:
 	-- 1) `addBreakPoint` will map to `dap.toggle_breakpoint()` outside
