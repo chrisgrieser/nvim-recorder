@@ -83,21 +83,21 @@ require("recorder").recordingStatus()
 
 -- displays non-empty macro-slots (registers) and indicates the selected ones. 
 -- Only displayed when *not* recording. Slots with breakpoints get an extra `#`.
--- Recommendation: use with the config `clear = true`
+-- Recommendation: use with the config `clear = true` to see whether you have any recordings
 require("recorder").displaySlots()
 ```
 
 Example for adding the status line components to [lualine](https://github.com/nvim-lualine/lualine.nvim):
 
 ```lua
--- Tip: put the components in different status line segments so they have 
--- a different color, making the recording status more distinguishable
 lualine_y = {
 	{ require("recorder").displaySlots },
 },
 lualine_z = {
 	{ require("recorder").recordingStatus },
 },
+-- Tip: put the components in different status line segments so they have 
+-- a different color, making the recording status more distinguishable
 ```
 
 ## Usage
@@ -115,21 +115,20 @@ lualine_z = {
 *nvim-recorder* allows you to set breakpoints in your macros which can be helpful for debugging macros. Breakpoints are automatically ignored when you trigger the macro with a count.
 
 __Setting Breakpoints__  
-1. *During a recording* press the `addBreakPoint` key (default: `#`) in normal mode. 
-2. *After a recording* use `editMacro` and add (or remove) the `#` manually.
+1. *During a recording,* press the `addBreakPoint` key (default: `#`) in normal mode. 
+2. *After a recording,* use `editMacro` and add (or remove) the `#` manually.
 
 __Playing Macros with Breakpoints__  
-Using the `playMacro` key, the macro automatically stops at the next breakpoint. The next time you press `playMacro`, the next segment of the macro is played. 
-
-Starting a new recording, editing a macro, or switching macro slot all reset the sequence, meaning that `playMacro` starts from the beginning again.
-
-> __Note__  
-> You can do other things in between playing segments of the macro, like moving a few characters to the left or right. That way you can also use breakpoints to manually correct irregularities.
+- Using the `playMacro` key, the macro automatically stops at the next breakpoint. The next time you press `playMacro`, the next segment of the macro is played. 
+- Starting a new recording, editing a macro, or switching macro slot all reset the sequence, meaning that `playMacro` starts from the beginning again.
+- You can do other things in between playing segments of the macro, like moving a few characters to the left or right. That way you can also use breakpoints to manually correct irregularities.
 
 __Ignoring Breakpoints__  
-When you play the macro with a *count* (for example `50Q`), breakpoints are automatically ignored. *Tip*: add a count of 1 (`1Q`) to play a macro once and still ignore breakpoints.
+When you play the macro with a *count* (for example `50Q`), breakpoints are automatically ignored. 
 
-__Shared Keybindings with nvim-dap__
+> 💡 add a count of 1 (`1Q`) to play a macro once and still ignore breakpoints.
+
+__Shared Keybindings with nvim-dap__  
 If you are using [nvim-dap](https://github.com/mfussenegger/nvim-dap), you can use `dapSharedKeymaps = true` to set up the following shared keybindings:
 1. `addBreakPoint` maps to `dap.toggle_breakpoint()` outside
 a recording. During a recording, it adds a macro breakpoint instead.
