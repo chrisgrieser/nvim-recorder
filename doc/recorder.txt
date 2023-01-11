@@ -88,7 +88,7 @@ CONFIGURATION ~
         -- (Note that by default, nvim-notify does not show the levels trace and debug.)
         logLevel = vim.log.levels.INFO,
     
-        -- experimental. See README.
+        -- experimental, see README
         dapSharedKeymaps = false,
     }
 <
@@ -106,7 +106,7 @@ STATUS LINE COMPONENTS ~
     
     -- displays non-empty macro-slots (registers) and indicates the selected ones. 
     -- Only displayed when *not* recording. Slots with breakpoints get an extra `#`.
-    -- Recommendation: use with the config `clear = true` to see whether you have any recordings
+    -- 💡 use with the config `clear = true` to see recordings you made this session.
     require("recorder").displaySlots()
 <
 
@@ -121,7 +121,7 @@ Example for adding the status line components to lualine
     lualine_z = {
         { require("recorder").recordingStatus },
     },
-    -- Tip: put the components in different status line segments so they have 
+    -- 💡 put the components in different status line segments so they have 
     -- a different color, making the recording status more distinguishable
 <
 
@@ -138,8 +138,8 @@ BASICS ~
 
 
 
-  **Note** For recursive macros (playing a macro inside a macro), you can still
-  use the default command `@a`.
+  💡 For recursive macros (playing a macro inside a macro), you can still use
+  the default command `@a`.
 
 
 MACRO BREAKPOINTS ~
