@@ -141,7 +141,7 @@ end
 local function yankMacro()
 	breakCounter = 0 
 	local reg = macroRegs[slotIndex]
-	local macroContent = getMacro(reg)
+	local macroContent = fn.keytrans(getMacro(reg))
 	if macroContent == "" then
 		vim.notify("Nothing to copy, macro slot [" .. reg .. "] is still empty.", logLevel)
 		return
@@ -151,7 +151,7 @@ local function yankMacro()
 	local useSystemClipb = #clipboardOpt > 0 and clipboardOpt[1]:find("unnamed")
 	local copyToReg = useSystemClipb and '+' or '"'
 
-	fn.setreg(copyToReg, fn.keytrans(macroContent))
+	fn.setreg(copyToReg, macroContent)
 	vim.notify("Copied Macro [" .. reg .. "]:\n" .. macroContent, logLevel)
 end
 
