@@ -212,7 +212,7 @@ function M.setup(config)
 	local switchKey = config.mapping.switchSlot or "<C-q>"
 	local editKey = config.mapping.editMacro or "cq"
 	local yankKey = config.mapping.yankMacro or "yq"
-	breakPointKey = config.mapping.addBreakPoint or "<C-b>"
+	breakPointKey = config.mapping.addBreakPoint or "##"
 
 	keymap("n", toggleKey, toggleRecording, { desc = " Start/Stop Recording" })
 	keymap("n", switchKey, switchMacroSlot, { desc = " Switch Macro Slot" })

@@ -59,7 +59,7 @@ require("recorder").setup {
 		switchSlot = "<C-q>",
 		editMacro = "cq",
 		yankMacro = "yq", -- also decodes it for turning macros to mappings
-		addBreakPoint = "#",
+		addBreakPoint = "##", -- ⚠️ this should be a string you don't use in insert mode during a macro
 	}
 
 	-- clears all macros-slots on startup
@@ -117,8 +117,8 @@ lualine_z = {
 *nvim-recorder* allows you to set breakpoints in your macros which can be helpful for debugging macros. Breakpoints are automatically ignored when you trigger the macro with a count.
 
 __Setting Breakpoints__  
-1. *During a recording,* press the `addBreakPoint` key (default: `#`) in normal mode. 
-2. *After a recording,* use `editMacro` and add (or remove) the `#` manually.
+1. *During a recording,* press the `addBreakPoint` key (default: `##`) in normal mode. 
+2. *After a recording,* use `editMacro` and add or remove the `##` manually. 
 
 __Playing Macros with Breakpoints__  
 - Using the `playMacro` key, the macro automatically stops at the next breakpoint. The next time you press `playMacro`, the next segment of the macro is played. 
