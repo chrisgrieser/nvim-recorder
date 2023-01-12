@@ -146,6 +146,8 @@ local function yankMacro()
 		vim.notify("Nothing to copy, macro slot [" .. reg .. "] is still empty.", logLevel)
 		return
 	end
+	-- remove breakpoints when yanking the macro
+	macroContent = macroContent:gsub(vim.pesc(breakPointKey), "")
 
 	local clipboardOpt = vim.opt.clipboard:get()
 	local useSystemClipb = #clipboardOpt > 0 and clipboardOpt[1]:find("unnamed")
