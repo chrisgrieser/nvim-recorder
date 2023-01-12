@@ -80,7 +80,7 @@ CONFIGURATION ~
             switchSlot = "<C-q>",
             editMacro = "cq",
             yankMacro = "yq", -- also decodes it for turning macros to mappings
-            addBreakPoint = "#",
+            addBreakPoint = "##", -- ⚠️ this should be a string you don't use in insert mode during a macro
         }
     
         -- clears all macros-slots on startup
@@ -152,8 +152,8 @@ helpful for debugging macros. Breakpoints are automatically ignored when you
 trigger the macro with a count.
 
 **Setting Breakpoints** 1. _During a recording,_ press the `addBreakPoint` key
-(default: `#`) in normal mode. 2. _After a recording,_ use `editMacro` and add
-(or remove) the `#` manually.
+(default: `##`) in normal mode. 2. _After a recording,_ use `editMacro` and add
+or remove the `##` manually.
 
 **Playing Macros with Breakpoints** - Using the `playMacro` key, the macro
 automatically stops at the next breakpoint. The next time you press
