@@ -1,4 +1,4 @@
-*recorder.txt*           For NVIM v0.8.0          Last change: 2023 January 12
+*recorder.txt*           For NVIM v0.8.0          Last change: 2023 January 16
 
 ==============================================================================
 Table of Contents                                 *recorder-table-of-contents*
@@ -81,7 +81,7 @@ CONFIGURATION ~
             editMacro = "cq",
             yankMacro = "yq", -- also decodes it for turning macros to mappings
             addBreakPoint = "##", -- ⚠️ this should be a string you don't use in insert mode during a macro
-        }
+        },
     
         -- clears all macros-slots on startup
         clear = false,
