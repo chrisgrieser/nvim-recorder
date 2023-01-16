@@ -66,7 +66,10 @@ local function playRecording()
 	end
 	local reg = macroRegs[slotIndex]
 	if isRecording() then
-		vim.notify("Playing the macro while it is recording would cause recursion problems. Aborting recording.", vim.log.levels.ERROR)
+		vim.notify(
+			"Playing the macro while it is recording would cause recursion problems. Aborting recording.",
+			vim.log.levels.ERROR
+		)
 		normal("q") -- end recording
 		setMacro(reg, "") -- empties macro since the recursion has been recorded there
 		return
@@ -139,7 +142,7 @@ local function editMacro()
 end
 
 local function yankMacro()
-	breakCounter = 0 
+	breakCounter = 0
 	local reg = macroRegs[slotIndex]
 	local macroContent = fn.keytrans(getMacro(reg))
 	if macroContent == "" then
@@ -151,7 +154,7 @@ local function yankMacro()
 
 	local clipboardOpt = vim.opt.clipboard:get()
 	local useSystemClipb = #clipboardOpt > 0 and clipboardOpt[1]:find("unnamed")
-	local copyToReg = useSystemClipb and '+' or '"'
+	local copyToReg = useSystemClipb and "+" or '"'
 
 	fn.setreg(copyToReg, macroContent)
 	vim.notify("Copied Macro [" .. reg .. "]:\n" .. macroContent, logLevel)
@@ -207,12 +210,21 @@ function M.setup(config)
 	end
 
 	-- set keymaps
-	toggleKey = config.mapping.startStopRecording or "q"
-	local playKey = config.mapping.playMacro or "Q"
-	local switchKey = config.mapping.switchSlot or "<C-q>"
-	local editKey = config.mapping.editMacro or "cq"
-	local yankKey = config.mapping.yankMacro or "yq"
-	breakPointKey = config.mapping.addBreakPoint or "##"
+	local defaultKeymaps = {
+		startStopRecording = "q",
+		playMacro = "Q",
+		switchSlot = "<C-q>",
+		editMacro = "cq",
+		yankMacro = "yq",
+		addBreakPoint = "##",
+	}
+	if not config.mapping then config.mapping = defaultKeymaps end
+	toggleKey = config.mapping.startStopRecording or defaultKeymaps.startStopRecording
+	local playKey = config.mapping.playMacro or defaultKeymaps.playMacro
+	local switchKey = config.mapping.switchSlot or defaultKeymaps.switchSlot
+	local editKey = config.mapping.editMacro or defaultKeymaps.editMacro
+	local yankKey = config.mapping.yankMacro or defaultKeymaps.yankMacro
+	breakPointKey = config.mapping.addBreakPoint or defaultKeymaps.addBreakPoint
 
 	keymap("n", toggleKey, toggleRecording, { desc = " Start/Stop Recording" })
 	keymap("n", switchKey, switchMacroSlot, { desc = " Switch Macro Slot" })
