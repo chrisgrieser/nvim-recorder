@@ -194,6 +194,7 @@ end
 ---Setup Macro Plugin
 ---@param config configObj
 function M.setup(config)
+	config = config or {}
 	slotIndex = 1 -- initial starting slot
 	macroRegs = config.slots or { "a", "b" }
 	logLevel = config.logLevel or vim.log.levels.INFO
