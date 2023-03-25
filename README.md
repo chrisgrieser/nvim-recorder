@@ -37,11 +37,11 @@ use {
 -- lazy.nvim
 {
 	"chrisgrieser/nvim-recorder",
-	config = function() require("recorder").setup() end,
+	opts = {},
 },
 ```
 
-Calling `setup()` is __required__.
+Calling `setup()` (or lazy's `opts`) is __required__.
 
 ### Configuration
 
