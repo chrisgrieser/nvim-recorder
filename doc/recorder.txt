@@ -59,6 +59,9 @@ INSTALLATION ~
 
 Calling `setup()` (or lazy’s `opts`) is **required**.
 
+Using a notification plugin like nvim-notify
+<https://github.com/rcarriga/nvim-notify> is not necessary, but recommended.
+
 
 CONFIGURATION ~
 
