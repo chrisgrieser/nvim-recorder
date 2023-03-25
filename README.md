@@ -41,7 +41,9 @@ use {
 },
 ```
 
-Calling `setup()` (or lazy's `opts`) is __required__.
+Calling `setup()` (or lazy's `opts`) is __required__. 
+
+Using a notification plugin like [nvim-notify](https://github.com/rcarriga/nvim-notify) is not necessary, but recommended.
 
 ### Configuration
 
