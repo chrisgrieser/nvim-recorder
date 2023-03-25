@@ -1,13 +1,13 @@
-*recorder.txt*           For NVIM v0.8.0          Last change: 2023 January 17
+*recorder.txt*            For NVIM v0.8.0           Last change: 2023 March 25
 
 ==============================================================================
 Table of Contents                                 *recorder-table-of-contents*
 
 1. nvim-recorder                                      |recorder-nvim-recorder|
-  - Features                                               |recorder-features|
-  - Setup                                                     |recorder-setup|
-  - Usage                                                     |recorder-usage|
-  - About me                                               |recorder-about-me|
+  - Features                                 |recorder-nvim-recorder-features|
+  - Setup                                       |recorder-nvim-recorder-setup|
+  - Usage                                       |recorder-nvim-recorder-usage|
+  - About me                                 |recorder-nvim-recorder-about-me|
 
 ==============================================================================
 1. nvim-recorder                                      *recorder-nvim-recorder*
@@ -24,17 +24,12 @@ Enhance the usage of macros in Neovim.
     - |recorder-basics|
     - |recorder-macro-breakpoints|
 - |recorder-about-me|
-    <!--toc:end-->
 
 
-FEATURES                                                   *recorder-features*
+FEATURES                                     *recorder-nvim-recorder-features*
 
 
-- **Simplified controls**: One key to start and stop recording, a second key for playing the macro. Instead of `qa … q @a @@`, you just do `q … q Q Q`.As opposed to vim, Neovim already allows you to use `Q` to |play the last
-    recorded macro|. Considering this, the simplified controls really only save you
-    one keystroke for one-off macros. However, as opposed to Neovim’s built-in
-    controls, you can still keep using `Q` for playing the not-most-recently
-    recorded macro.
+- **Simplified controls**: One key to start and stop recording, a second key for playing the macro. Instead of `qa … q @a @@`, you just do `q … q Q Q`.
 - **Macro Breakpoints** for easier debugging of macros. Breakpoints can also be set after the recording and are automatically ignored when triggering a macro with a count.
 - **Status line components**: Particularly useful if you use `cmdheight=0` where the recording status is not visible.
 - **Macro-to-Mapping**: Copy a macro in decoded form for mappings to your default register.
@@ -43,11 +38,12 @@ FEATURES                                                   *recorder-features*
 - Written 100% in lua. Lightweight (~250 LoC).
 
 
-SETUP                                                         *recorder-setup*
+SETUP                                           *recorder-nvim-recorder-setup*
+
 
 INSTALLATION ~
 
->
+>lua
     -- packer
     use {
         "chrisgrieser/nvim-recorder",
@@ -57,16 +53,16 @@ INSTALLATION ~
     -- lazy.nvim
     {
         "chrisgrieser/nvim-recorder",
-        config = function() require("recorder").setup() end,
+        opts = {},
     },
 <
 
+Calling `setup()` (or lazy’s `opts`) is **required**.
 
-Calling `setup()` is **required**.
 
 CONFIGURATION ~
 
->
+>lua
     -- default values
     require("recorder").setup {
         -- Named registers where macros are saved. The first register is the default
@@ -95,13 +91,13 @@ CONFIGURATION ~
     }
 <
 
-
 If you want to handle multiple macros or use `cmdheight=0`, it is recommended
 to also set up the status line components.
 
+
 STATUS LINE COMPONENTS ~
 
->
+>lua
     -- indicates whether you are currently recording. Useful if you are using 
     -- `cmdheight=0`, where recording-status is not visible.
     require("recorder").recordingStatus()
@@ -112,11 +108,10 @@ STATUS LINE COMPONENTS ~
     require("recorder").displaySlots()
 <
 
-
 Example for adding the status line components to lualine
 <https://github.com/nvim-lualine/lualine.nvim>:
 
->
+>lua
     lualine_y = {
         { require("recorder").displaySlots },
     },
@@ -128,7 +123,8 @@ Example for adding the status line components to lualine
 <
 
 
-USAGE                                                         *recorder-usage*
+USAGE                                           *recorder-nvim-recorder-usage*
+
 
 BASICS ~
 
@@ -140,10 +136,8 @@ BASICS ~
 - `yankMacro`: Copies the current macro in decoded form that can be used to create a mapping from it. Breakpoints are removed from the macro
 
 
-
   💡 For recursive macros (playing a macro inside a macro), you can still use
   the default command `@a`.
-
 
 MACRO BREAKPOINTS ~
 
@@ -165,15 +159,11 @@ the sequence, meaning that `playMacro` starts from the beginning again.
   💡 You can do other things in between playing segments of the macro, like
   moving a few characters to the left or right. That way you can also use
   breakpoints to manually correct irregularities.
-
-
 **Ignoring Breakpoints** When you play the macro with a _count_ (for example
 `50Q`), breakpoints are automatically ignored.
 
 
   💡 Add a count of 1 (`1Q`) to play a macro once and still ignore breakpoints.
-
-
 **Shared Keybindings with nvim-dap** If you are using nvim-dap
 <https://github.com/mfussenegger/nvim-dap>, you can use `dapSharedKeymaps =
 true` to set up the following shared keybindings: 1. `addBreakPoint` maps to
@@ -186,7 +176,8 @@ Note that this feature is experimental, since the respective API from nvim-dap
 is non-public and can be changed without deprecation notice
 <https://github.com/mfussenegger/nvim-dap/discussions/810#discussioncomment-4623606>.
 
-ABOUT ME                                                   *recorder-about-me*
+
+ABOUT ME                                     *recorder-nvim-recorder-about-me*
 
 In my day job, I am a sociologist studying the social mechanisms underlying the
 digital economy. For my PhD project, I investigate the governance of the app
