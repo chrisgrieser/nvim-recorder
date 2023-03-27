@@ -71,6 +71,11 @@ require("recorder").setup {
 	-- (note that by default, nvim-notify does not show the levels trace and debug.)
 	logLevel = vim.log.levels.INFO,
 
+	-- if enabled, only essential or critical notifications are sent.
+	-- If you do not use a plugin like nvim-notify, set this to `true`
+	-- to remove otherwise annoying notifications.
+	lessNotifications = false,
+
 	-- experimental, see README
 	dapSharedKeymaps = false,
 }

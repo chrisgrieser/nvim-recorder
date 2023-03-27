@@ -3,6 +3,7 @@ local v = vim.v
 local getMacro = vim.fn.getreg
 local setMacro = vim.fn.setreg
 local keymap = vim.keymap.set
+local level = vim.log.levels
 
 ---@return boolean
 local function isRecording() return fn.reg_recording() ~= "" end
@@ -12,11 +13,18 @@ local function isPlaying() return fn.reg_executing() ~= "" end
 ---@param cmdStr any
 local function normal(cmdStr) vim.cmd.normal { cmdStr, bang = true } end
 
-local macroRegs, slotIndex, logLevel
+local macroRegs, slotIndex, logLevel, lessNotifications
 local toggleKey, breakPointKey, dapSharedKeymaps
 local M = {}
 
 local breakCounter = 0 -- resets break counter on plugin reload
+
+-- post vim.notify with configured log level.
+-- Posts no notifications if lessNotifications is true
+local function nonEssentialNotify(msg)
+	if lessNotifications then return end
+	vim.notify(msg, logLevel)
+end
 
 --------------------------------------------------------------------------------
 -- COMMANDS
@@ -29,7 +37,7 @@ local function toggleRecording()
 	if not isRecording() then
 		breakCounter = 0 -- reset break points
 		normal("q" .. reg)
-		vim.notify("Recording to [" .. reg .. "]…", logLevel)
+		nonEssentialNotify("Recording to [" .. reg .. "]…")
 		return
 	end
 
@@ -47,9 +55,9 @@ local function toggleRecording()
 	local justRecorded = fn.keytrans(getMacro(reg))
 	if justRecorded == "" then
 		setMacro(reg, prevRec)
-		vim.notify("Recording aborted.\n(Previous recording is kept.)", logLevel)
-	else
-		vim.notify("Recorded [" .. reg .. "]:\n" .. justRecorded, logLevel)
+		vim.notify("Recording aborted.\n(Previous recording is kept.)", level.INFO)
+	elseif not lessNotifications then
+		nonEssentialNotify("Recorded [" .. reg .. "]:\n" .. justRecorded)
 	end
 end
 
@@ -64,11 +72,12 @@ local function playRecording()
 			return
 		end
 	end
+
 	local reg = macroRegs[slotIndex]
 	if isRecording() then
 		vim.notify(
 			"Playing the macro while it is recording would cause recursion problems. Aborting recording.",
-			vim.log.levels.ERROR
+			level.ERROR
 		)
 		normal("q") -- end recording
 		setMacro(reg, "") -- empties macro since the recursion has been recorded there
@@ -81,7 +90,7 @@ local function playRecording()
 
 	-- empty slot
 	if macro == "" then
-		vim.notify("Macro Slot [" .. reg .. "] is empty.", logLevel)
+		vim.notify("Macro Slot [" .. reg .. "] is empty.", level.WARN)
 		return
 
 	-- with breakpoints
@@ -96,9 +105,9 @@ local function playRecording()
 		setMacro(reg, macro) -- restore original macro for all other purposes like prewing slots
 
 		if breakCounter ~= #macroParts then
-			vim.notify("Reached Breakpoint #" .. tostring(breakCounter), logLevel)
+			vim.notify("Reached Breakpoint #" .. tostring(breakCounter), level.INFO)
 		else
-			vim.notify("Reached end of macro", logLevel)
+			vim.notify("Reached end of macro", level.INFO)
 			breakCounter = 0
 		end
 
@@ -122,7 +131,7 @@ local function switchMacroSlot()
 	else
 		msg = msg .. "\n(empty)"
 	end
-	vim.notify(msg, logLevel)
+	nonEssentialNotify(msg)
 end
 
 ---edit the current slot
@@ -137,7 +146,7 @@ local function editMacro()
 	vim.ui.input(inputConfig, function(editedMacro)
 		if not editedMacro then return end -- cancellation
 		setMacro(reg, editedMacro)
-		vim.notify("Edited Macro [" .. reg .. "]:\n" .. editedMacro, logLevel)
+		nonEssentialNotify("Edited Macro [" .. reg .. "]:\n" .. editedMacro)
 	end)
 end
 
@@ -146,7 +155,7 @@ local function yankMacro()
 	local reg = macroRegs[slotIndex]
 	local macroContent = fn.keytrans(getMacro(reg))
 	if macroContent == "" then
-		vim.notify("Nothing to copy, macro slot [" .. reg .. "] is still empty.", logLevel)
+		vim.notify("Nothing to copy, macro slot [" .. reg .. "] is still empty.", level.WARN)
 		return
 	end
 	-- remove breakpoints when yanking the macro
@@ -157,15 +166,15 @@ local function yankMacro()
 	local copyToReg = useSystemClipb and "+" or '"'
 
 	fn.setreg(copyToReg, macroContent)
-	vim.notify("Copied Macro [" .. reg .. "]:\n" .. macroContent, logLevel)
+	nonEssentialNotify("Copied Macro [" .. reg .. "]:\n" .. macroContent)
 end
 
 local function addBreakPoint()
 	if isRecording() then
 		-- INFO nothing happens, but the key is still recorded in the macro
-		vim.notify("Macro breakpoint added.", logLevel)
+		vim.notify("Macro breakpoint added.", level.INFO)
 	elseif not isPlaying() and not dapSharedKeymaps then
-		vim.notify("Cannot insert breakpoint outside of a recording.", vim.log.levels.WARN)
+		vim.notify("Cannot insert breakpoint outside of a recording.", level.WARN)
 	elseif not isPlaying() and dapSharedKeymaps then
 		-- only test for dap here to not interfere with user lazyloading
 		if require("dap") then require("dap").toggle_breakpoint() end
@@ -176,11 +185,12 @@ end
 -- CONFIG
 
 ---@class configObj
----@field slots table<string> named register slots
+---@field slots string[] named register slots
 ---@field clear boolean whether to clear slots/registers on setup
 ---@field timeout number Default timeout for notification
 ---@field mapping maps individual mappings
 ---@field logLevel integer log level (vim.log.levels)
+---@field lessNotifications boolean plugin is less verbose, shows only essential or critical notifications
 ---@field dapSharedKeymaps boolean (experimental) partially share keymaps with dap
 
 ---@class maps
@@ -193,18 +203,20 @@ end
 
 ---Setup Macro Plugin
 ---@param config configObj
+-- selene: allow(high_cyclomatic_complexity)
 function M.setup(config)
 	config = config or {}
 	slotIndex = 1 -- initial starting slot
 	macroRegs = config.slots or { "a", "b" }
-	logLevel = config.logLevel or vim.log.levels.INFO
+	logLevel = config.logLevel or level.INFO
+	lessNotifications = config.lessNotifications or false
 
 	-- validation of slots
 	for _, reg in pairs(macroRegs) do
 		if not (reg:find("^%l$")) then
 			vim.notify(
 				"'" .. reg .. "' is an invalid slot. Choose only named registers (a-z).",
-				vim.log.levels.ERROR
+				level.ERROR
 			)
 			return
 		end
