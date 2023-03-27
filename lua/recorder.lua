@@ -10,7 +10,7 @@ local function isPlaying() return fn.reg_executing() ~= "" end
 
 ---runs `:normal` natively with bang
 ---@param cmdStr any
-function normal(cmdStr) vim.cmd.normal { cmdStr, bang = true } end
+local function normal(cmdStr) vim.cmd.normal { cmdStr, bang = true } end
 
 local macroRegs, slotIndex, logLevel
 local toggleKey, breakPointKey, dapSharedKeymaps
