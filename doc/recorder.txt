@@ -1,18 +1,18 @@
-*recorder.txt*            For NVIM v0.8.0           Last change: 2023 April 02
+*recorder.txt*            For NVIM v0.8.0           Last change: 2023 April 06
 
 ==============================================================================
 Table of Contents                                 *recorder-table-of-contents*
 
-1. nvim-recorder 📹                            |recorder-nvim-recorder-📹|
-  - Features                            |recorder-nvim-recorder-📹-features|
-  - Setup                                  |recorder-nvim-recorder-📹-setup|
-  - Usage                                  |recorder-nvim-recorder-📹-usage|
-  - About me                            |recorder-nvim-recorder-📹-about-me|
+1. nvim-recorder                                     |recorder-nvim-recorder-|
+  - Features                                |recorder-nvim-recorder--features|
+  - Setup                                      |recorder-nvim-recorder--setup|
+  - Usage                                      |recorder-nvim-recorder--usage|
+  - About me                                |recorder-nvim-recorder--about-me|
 
 ==============================================================================
-1. nvim-recorder 📹                            *recorder-nvim-recorder-📹*
+1. nvim-recorder                                     *recorder-nvim-recorder-*
 
-Enhance the usage of macros in Neovim.
+Enhancethe usage of macros in Neovim.
 
 
 - |recorder-features|
@@ -26,19 +26,19 @@ Enhance the usage of macros in Neovim.
 - |recorder-about-me|
 
 
-FEATURES                                *recorder-nvim-recorder-📹-features*
+FEATURES                                    *recorder-nvim-recorder--features*
 
 
-- **Simplified controls**: One key to start and stop recording, a second key for playing the macro. Instead of `qa … q @a @@`, you just do `q … q Q Q`.
+- **Simplified controls**One key to start and stop recording, a second key for playing the macro. Instead of `qa … q @a @@`, you just do `q … q Q Q`.
 - **Macro Breakpoints** for easier debugging of macros. Breakpoints can also be set after the recording and are automatically ignored when triggering a macro with a count.
-- **Status line components**: Particularly useful if you use `cmdheight=0` where the recording status is not visible.
-- **Macro-to-Mapping**: Copy a macro in decoded form for mappings to your default register.
+- **Status line components**Particularly useful if you use `cmdheight=0` where the recording status is not visible.
+- **Macro-to-Mapping**Copy a macro in decoded form for mappings to your default register.
 - **Various quality-of-life features** like notifications with macro content, the ability to cancel a recording, or a command to edit macros.
 - Uses up-to-date nvim features like `vim.ui.input` or `vim.notify`. This means you can get confirmation notices with plugins like nvim-notify <https://github.com/rcarriga/nvim-notify>.
 - Written 100% in lua. Lightweight (~250 LoC).
 
 
-SETUP                                      *recorder-nvim-recorder-📹-setup*
+SETUP                                          *recorder-nvim-recorder--setup*
 
 
 INSTALLATION ~
@@ -79,7 +79,7 @@ CONFIGURATION ~
             switchSlot = "<C-q>",
             editMacro = "cq",
             yankMacro = "yq", -- also decodes it for turning macros to mappings
-            addBreakPoint = "##", -- ⚠️ this should be a string you don't use in insert mode during a macro
+            addBreakPoint = "", --  this should be a string you don't use in insert mode during a macro
         },
     
         -- clears all macros-slots on startup
@@ -111,13 +111,13 @@ STATUS LINE COMPONENTS ~
     require("recorder").recordingStatus()
     
     -- displays non-empty macro-slots (registers) and indicates the selected ones. 
-    -- Only displayed when *not* recording. Slots with breakpoints get an extra `#`.
-    -- 💡 use with the config `clear = true` to see recordings you made this session.
+    -- Only displayed when not recording. Slots with breakpoints get an extra ``.
+    --  use with the config `clear = true` to see recordings you made this session.
     require("recorder").displaySlots()
 <
 
 Example for adding the status line components to lualine
-<https://github.com/nvim-lualine/lualine.nvim>:
+<https://github.com/nvim-lualine/lualine.nvim>
 
 >lua
     lualine_y = {
@@ -126,26 +126,26 @@ Example for adding the status line components to lualine
     lualine_z = {
         { require("recorder").recordingStatus },
     },
-    -- 💡 put the components in different status line segments so they have 
+    --  put the components in different status line segments so they have 
     -- a different color, making the recording status more distinguishable
 <
 
 
-USAGE                                      *recorder-nvim-recorder-📹-usage*
+USAGE                                          *recorder-nvim-recorder--usage*
 
 
 BASICS ~
 
 
-- `startStopRecording`: Starts recording to the current macro slot (so you do not need to specify a register). Press again to end the recording.
-- `playMacro`: Plays the macro in the current slot (without the need to specify a register).
-- `switchSlot`: Cycles through the registers you specified in the configuration. Also show a notification with the slot and its content. (The currently selected slot can be seen in the |recorder-status-line-component|. )
-- `editMacro`: Lets you modify the macro recorded in the active slot. (Be aware that these are the keystrokes in "encoded" form.)
-- `yankMacro`: Copies the current macro in decoded form that can be used to create a mapping from it. Breakpoints are removed from the macro
+- `startStopRecording`Starts recording to the current macro slot (so you do not need to specify a register). Press again to end the recording.
+- `playMacro`Plays the macro in the current slot (without the need to specify a register).
+- `switchSlot`Cycles through the registers you specified in the configuration. Also show a notification with the slot and its content. (The currently selected slot can be seen in the |recorder-status-line-component|. )
+- `editMacro`Lets you modify the macro recorded in the active slot. (Be aware that these are the keystrokes in "encoded" form.)
+- `yankMacro`Copies the current macro in decoded form that can be used to create a mapping from it. Breakpoints are removed from the macro
 
 
-  💡 For recursive macros (playing a macro inside a macro), you can still use
-  the default command `@a`.
+  For recursive macros (playing a macro inside a macro), you can still use the
+  default command `@a`.
 
 MACRO BREAKPOINTS ~
 
@@ -154,8 +154,8 @@ helpful for debugging macros. Breakpoints are automatically ignored when you
 trigger the macro with a count.
 
 **Setting Breakpoints** 1. _During a recording,_ press the `addBreakPoint` key
-(default: `##`) in normal mode. 2. _After a recording,_ use `editMacro` and add
-or remove the `##` manually.
+(default: )in normal mode. 2. _After a recording,_ use `editMacro` and add or
+remove the manually.
 
 **Playing Macros with Breakpoints** - Using the `playMacro` key, the macro
 automatically stops at the next breakpoint. The next time you press
@@ -164,14 +164,14 @@ recording, editing a macro, yanking a macro, or switching macro slot all reset
 the sequence, meaning that `playMacro` starts from the beginning again.
 
 
-  💡 You can do other things in between playing segments of the macro, like
-  moving a few characters to the left or right. That way you can also use
-  breakpoints to manually correct irregularities.
+  You can do other things in between playing segments of the macro, like moving a
+  few characters to the left or right. That way you can also use breakpoints to
+  manually correct irregularities.
 **Ignoring Breakpoints** When you play the macro with a _count_ (for example
 `50Q`), breakpoints are automatically ignored.
 
 
-  💡 Add a count of 1 (`1Q`) to play a macro once and still ignore breakpoints.
+  Add a count of 1 (`1Q`) to play a macro once and still ignore breakpoints.
 **Shared Keybindings with nvim-dap** If you are using nvim-dap
 <https://github.com/mfussenegger/nvim-dap>, you can use `dapSharedKeymaps =
 true` to set up the following shared keybindings: 1. `addBreakPoint` maps to
@@ -185,7 +185,7 @@ is non-public and can be changed without deprecation notice
 <https://github.com/mfussenegger/nvim-dap/discussions/810#discussioncomment-4623606>.
 
 
-ABOUT ME                                *recorder-nvim-recorder-📹-about-me*
+ABOUT ME                                    *recorder-nvim-recorder--about-me*
 
 In my day job, I am a sociologist studying the social mechanisms underlying the
 digital economy. For my PhD project, I investigate the governance of the app
