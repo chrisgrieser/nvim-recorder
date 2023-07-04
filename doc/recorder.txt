@@ -1,4 +1,4 @@
-*recorder.txt*            For NVIM v0.8.0           Last change: 2023 April 06
+*recorder.txt*            For NVIM v0.8.0            Last change: 2023 July 04
 
 ==============================================================================
 Table of Contents                                 *recorder-table-of-contents*
@@ -14,7 +14,6 @@ Table of Contents                                 *recorder-table-of-contents*
 
 Enhancethe usage of macros in Neovim.
 
-
 - |recorder-features|
 - |recorder-setup|
     - |recorder-installation|
@@ -27,7 +26,6 @@ Enhancethe usage of macros in Neovim.
 
 
 FEATURES                                    *recorder-nvim-recorder--features*
-
 
 - **Simplified controls**One key to start and stop recording, a second key for playing the macro. Instead of `qa … q @a @@`, you just do `q … q Q Q`.
 - **Macro Breakpoints** for easier debugging of macros. Breakpoints can also be set after the recording and are automatically ignored when triggering a macro with a count.
@@ -136,12 +134,11 @@ USAGE                                          *recorder-nvim-recorder--usage*
 
 BASICS ~
 
-
 - `startStopRecording`Starts recording to the current macro slot (so you do not need to specify a register). Press again to end the recording.
 - `playMacro`Plays the macro in the current slot (without the need to specify a register).
-- `switchSlot`Cycles through the registers you specified in the configuration. Also show a notification with the slot and its content. (The currently selected slot can be seen in the |recorder-status-line-component|. )
-- `editMacro`Lets you modify the macro recorded in the active slot. (Be aware that these are the keystrokes in "encoded" form.)
-- `yankMacro`Copies the current macro in decoded form that can be used to create a mapping from it. Breakpoints are removed from the macro
+- `switchSlot`Cycles through the registers you specified in the configuration. Also show a notification with the slot and its content. (The currently selected slot can be seen in the |recorder-status-line-component|.)
+- `editMacro`Modify the macro recorded in the active slot. (Be aware that these are the keystrokes in "encoded" form.)
+- `yankMacro`Copies the current macro in decoded form that can be used to create a mapping from it. Breakpoints are removed from the macro.
 
 
   For recursive macros (playing a macro inside a macro), you can still use the
