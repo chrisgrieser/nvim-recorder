@@ -114,9 +114,9 @@ lualine_z = {
 ### Basics
 - `startStopRecording`: Starts recording to the current macro slot (so you do not need to specify a register). Press again to end the recording.
 - `playMacro`: Plays the macro in the current slot (without the need to specify a register).
-- `switchSlot`: Cycles through the registers you specified in the configuration. Also show a notification with the slot and its content. (The currently selected slot can be seen in the [status line component](#status-line-components). )
-- `editMacro`: Lets you modify the macro recorded in the active slot. (Be aware that these are the keystrokes in "encoded" form.)
-- `yankMacro`: Copies the current macro in decoded form that can be used to create a mapping from it. Breakpoints are removed from the macro
+- `switchSlot`: Cycles through the registers you specified in the configuration. Also show a notification with the slot and its content. (The currently selected slot can be seen in the [status line component](#status-line-components).)
+- `editMacro`: Modify the macro recorded in the active slot. (Be aware that these are the keystrokes in "encoded" form.)
+- `yankMacro`: Copies the current macro in decoded form that can be used to create a mapping from it. Breakpoints are removed from the macro.
 
 > 💡 For recursive macros (playing a macro inside a macro), you can still use the default command `@a`.
 
