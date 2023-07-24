@@ -19,7 +19,7 @@ Enhance the usage of macros in Neovim.
 - __Macro Breakpoints__ for easier debugging of macros. Breakpoints can also be set after the recording and are automatically ignored when triggering a macro with a count.
 - __Status line components__: Particularly useful if you use `cmdheight=0` where the recording status is not visible.
 - __Macro-to-Mapping__: Copy a macro in decoded form for mappings to your default register.
-- __Various quality-of-life features__ like notifications with macro content, the ability to cancel a recording, or a command to edit macros.
+- __Various quality-of-life features__: notifications with macro content, the ability to cancel a recording, a command to edit macros, automatically setting [`lazyredraw`](https://neovim.io/doc/user/options.html#'lazyredraw') when using a high count, …
 - Uses up-to-date nvim features like `vim.ui.input` or `vim.notify`. This means you can get confirmation notices with plugins like [nvim-notify](https://github.com/rcarriga/nvim-notify).
 - Written 100% in lua. Lightweight (~250 LoC).
 
@@ -75,6 +75,10 @@ require("recorder").setup {
 	-- If you do not use a plugin like nvim-notify, set this to `true`
 	-- to remove otherwise annoying notifications.
 	lessNotifications = false,
+
+	-- When the number of counts is above this value, automatically
+	-- enable`lazyredraw` for the duration of the macro (see `:h lazyredraw`).
+	lazyredrawThreshold = 500,
 
 	-- experimental, see README
 	dapSharedKeymaps = false,

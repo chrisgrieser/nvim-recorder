@@ -1,5 +1,6 @@
 local fn = vim.fn
 local v = vim.v
+local opt = vim.opt
 local getMacro = vim.fn.getreg
 local setMacro = vim.fn.setreg
 local keymap = vim.keymap.set
@@ -14,7 +15,7 @@ local function isPlaying() return fn.reg_executing() ~= "" end
 local function normal(cmdStr) vim.cmd.normal { cmdStr, bang = true } end
 
 local macroRegs, slotIndex, logLevel, lessNotifications
-local toggleKey, breakPointKey, dapSharedKeymaps
+local toggleKey, breakPointKey, dapSharedKeymaps, lazyredrawThreshold
 local M = {}
 
 local breakCounter = 0 -- resets break counter on plugin reload
@@ -87,6 +88,7 @@ local function playRecording()
 	local macro = getMacro(reg)
 	local hasBreakPoints = macro:find(vim.pesc(breakPointKey))
 	local countGiven = v.count ~= 0
+	local useLazyRedraw = v.count >= lazyredrawThreshold
 
 	-- empty slot
 	if macro == "" then
@@ -113,7 +115,9 @@ local function playRecording()
 
 	-- normal macro
 	else
+		if useLazyRedraw and opt.lazyredraw:get() == false then opt.lazyredraw = true end
 		normal(v.count1 .. "@" .. reg)
+		if useLazyRedraw then opt.lazyredraw = false end
 	end
 end
 
@@ -161,7 +165,7 @@ local function yankMacro()
 	-- remove breakpoints when yanking the macro
 	macroContent = macroContent:gsub(vim.pesc(breakPointKey), "")
 
-	local clipboardOpt = vim.opt.clipboard:get()
+	local clipboardOpt = opt.clipboard:get()
 	local useSystemClipb = #clipboardOpt > 0 and clipboardOpt[1]:find("unnamed")
 	local copyToReg = useSystemClipb and "+" or '"'
 
@@ -191,6 +195,7 @@ end
 ---@field mapping maps individual mappings
 ---@field logLevel integer log level (vim.log.levels)
 ---@field lessNotifications boolean plugin is less verbose, shows only essential or critical notifications
+---@field lazyredrawThreshold boolean when the number of counts is above this value, `lazyredraw` will be temporarily enabled during macro execution
 ---@field dapSharedKeymaps boolean (experimental) partially share keymaps with dap
 
 ---@class maps
@@ -210,6 +215,7 @@ function M.setup(config)
 	macroRegs = config.slots or { "a", "b" }
 	logLevel = config.logLevel or level.INFO
 	lessNotifications = config.lessNotifications or false
+	lazyredrawThreshold = config.lazyredrawThreshold or 500
 
 	-- validation of slots
 	for _, reg in pairs(macroRegs) do
