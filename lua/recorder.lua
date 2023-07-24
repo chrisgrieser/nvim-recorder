@@ -67,7 +67,6 @@ end
 local function playRecording()
 	local reg = macroRegs[slotIndex]
 	local macro = getMacro(reg)
-	local countGiven = v.count ~= 0
 
 	-- Guard Clause 1: Toggle Breakpoint instead of Macro
 	-- WARN undocumented and prone to change https://github.com/mfussenegger/nvim-dap/discussions/810#discussioncomment-4623606
@@ -99,15 +98,12 @@ local function playRecording()
 		return
 	end
 
+	-- EXECUTE MACRO
+	local countGiven = v.count ~= 0
 	local hasBreakPoints = macro:find(vim.pesc(breakPointKey))
-	local useLazyRedraw = v.count >= perf.countThreshold
-		and perf.lazyredraw
-		and not (opt.lazyredraw:get() == true)
-	local noSystemClipboard = v.count >= perf.countThreshold
-		and perf.noSystemclipboard
-		and (opt.clipboard:get() ~= "")
+	local usePerfOptimizations = v.count >= perf.countThreshold
 
-	-- Execute Macro (with breakpoints)
+	-- macro (w/ breakpoints)
 	if hasBreakPoints and not countGiven then
 		breakCounter = breakCounter + 1
 		local macroParts = vim.split(macro, breakPointKey, {})
@@ -124,22 +120,28 @@ local function playRecording()
 			breakCounter = 0
 		end
 
-	-- Execute Macro (without breakpoints, but with performance optimization)
-	else
-		if useLazyRedraw then opt.lazyredraw = true end
-		local prevClipboardOpt
-		if noSystemClipboard then
-			opt.clipboard = ""
-			prevClipboardOpt = opt.clipboard:get()
+	-- macro (w/ perf optimizations)
+	elseif usePerfOptimizations then
+		local original = {}
+		if perf.lazyredraw then
+			original.lazyredraw = opt.lazyredraw:get()
+			opt.lazyredraw = true
 		end
-		local prevAutocmdIgnore = opt.eventignore:get()
+		if perf.noSystemclipboard then
+			original.clipboard = opt.clipboard:get()
+			opt.clipboard = ""
+		end
+		original.eventignore = opt.eventignore:get()
 		opt.eventignore = perf.autocmdEventsIgnore
 
 		normal(v.count1 .. "@" .. reg)
+		if perf.lazyredraw then vim.opt.lazyredraw = original.lazyredraw end
+		if perf.noSystemclipboard then opt.clipboard = original.clipboard end
+		opt.eventignore = original.eventignore
 
-		if useLazyRedraw then opt.lazyredraw = false end
-		if noSystemClipboard then opt.clipboard = prevClipboardOpt end
-		opt.eventignore = prevAutocmdIgnore
+	-- macro (regular)
+	else
+		normal(v.count1 .. "@" .. reg)
 	end
 end
 
