@@ -65,18 +65,14 @@ end
 
 ---play the macro recorded in current slot
 local function playRecording()
-	-- macro variables
 	local reg = macroRegs[slotIndex]
 	local macro = getMacro(reg)
-	local hasBreakPoints = macro:find(vim.pesc(breakPointKey))
 	local countGiven = v.count ~= 0
-	local useLazyRedraw = v.count >= perf.threshold and perf.lazyredraw and not (opt.lazyredraw:get() == true)
-	local noSystemClipboard = v.count >= perf.threshold and perf.noSystemclipboard and (opt.clipboard:get() ~= "")
 
 	-- Guard Clause 1: Toggle Breakpoint instead of Macro
 	-- WARN undocumented and prone to change https://github.com/mfussenegger/nvim-dap/discussions/810#discussioncomment-4623606
 	if dapSharedKeymaps then
-		-- nested to avoid requiring dap for lazyloaders
+		-- nested to avoid requiring `dap` for lazyloading
 		local dapBreakpointsExist = next(require("dap.breakpoints").get()) ~= nil
 		if dapBreakpointsExist then
 			require("dap").continue()
@@ -86,10 +82,10 @@ local function playRecording()
 
 	-- Guard Clause 2: Recursively play macro
 	if isRecording() then
+		-- stylua: ignore
 		vim.notify(
-			"Playing the macro while it is recording would cause recursion problems. Aborting. (You can still use recursive macros by using `@"
-				.. reg
-				.. "`)",
+			"Playing the macro while it is recording would cause recursion problems." ..
+			"Aborting. (You can still use recursive macros by using `@" .. reg .. "`)",
 			level.ERROR
 		)
 		normal("q") -- end recording
@@ -103,13 +99,20 @@ local function playRecording()
 		return
 	end
 
+	local hasBreakPoints = macro:find(vim.pesc(breakPointKey))
+	local useLazyRedraw = v.count >= perf.threshold
+		and perf.lazyredraw
+		and not (opt.lazyredraw:get() == true)
+	local noSystemClipboard = v.count >= perf.threshold
+		and perf.noSystemclipboard
+		and (opt.clipboard:get() ~= "")
+
 	-- Execute Macro (with breakpoints)
 	if hasBreakPoints and not countGiven then
 		breakCounter = breakCounter + 1
 		local macroParts = vim.split(macro, breakPointKey, {})
 		local partialMacro = macroParts[breakCounter]
 
-		-- play the partial macro
 		setMacro(reg, partialMacro)
 		normal("@" .. reg)
 		setMacro(reg, macro) -- restore original macro for all other purposes like prewing slots
@@ -121,7 +124,7 @@ local function playRecording()
 			breakCounter = 0
 		end
 
-	-- Execute Macro (without breakpoints)
+	-- Execute Macro (without breakpoints, but with performance optimization)
 	else
 		if useLazyRedraw then opt.lazyredraw = true end
 		local prevClipboardOpt
@@ -129,11 +132,14 @@ local function playRecording()
 			opt.clipboard = ""
 			prevClipboardOpt = opt.clipboard:get()
 		end
+		local prevAutocmdIgnore = opt.eventignore:get()
+		opt.eventignore = perf.autocmdEventsIgnore
 
 		normal(v.count1 .. "@" .. reg)
 
 		if useLazyRedraw then opt.lazyredraw = false end
 		if noSystemClipboard then opt.clipboard = prevClipboardOpt end
+		opt.eventignore = prevAutocmdIgnore
 	end
 end
 
@@ -218,6 +224,7 @@ end
 ---@field countThreshold number if count used is higher than threshold, the following performance optimizations are applied
 ---@field lazyredraw boolean :h lazyredraw
 ---@field noSystemClipboard boolean no `*` or `+` in clipboard https://vi.stackexchange.com/a/31888
+---@field autocmdEventsIgnore string[] list of autocmd events to ignore
 
 ---@class maps
 ---@field startStopRecording string
@@ -247,14 +254,24 @@ function M.setup(config)
 
 	-- performance opts
 	local defaultPerfOpts = {
-		countThreshold = 1,
+		countThreshold = 100,
 		lazyredraw = true,
 		noSystemClipboard = true,
+		autocmdEventsIgnore = {
+			"TextChangedI",
+			"TextChanged",
+			"InsertLeave",
+			"InsertEnter",
+			"InsertCharPre",
+		},
 	}
 	if not config.performanceOpts then config.performanceOpts = defaultPerfOpts end
 	perf.countThreshold = config.performanceOpts.countThreshold or defaultPerfOpts.countThreshold
 	perf.lazyredraw = config.performanceOpts.lazyredraw or defaultPerfOpts.lazyredraw
-	perf.noSystemClipboard = config.performanceOpts.noSystemClipboard or defaultPerfOpts.noSystemClipboard
+	perf.noSystemClipboard = config.performanceOpts.noSystemClipboard
+		or defaultPerfOpts.noSystemClipboard
+	perf.autocmdEventsIgnore = config.performanceOpts.autocmdEventsIgnore
+		or defaultPerfOpts.autocmdEventsIgnore
 
 	-- macro slots (+ validate them)
 	macroRegs = config.slots or { "a", "b" }

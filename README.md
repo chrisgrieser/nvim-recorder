@@ -53,8 +53,9 @@ Using a notification plugin like [nvim-notify](https://github.com/rcarriga/nvim-
 ```lua
 -- default values
 require("recorder").setup {
-	-- Named registers where macros are saved. The first register is the default
-	-- register/macro-slot used after startup.
+	-- Named registers where macros are saved (single lowercase letters only).
+	-- The first register is the default register used as macro-slot used after
+	-- startup.
 	slots = { "a", "b" },
 
 	-- default keymaps
@@ -84,8 +85,15 @@ require("recorder").setup {
 	-- temporarily changes changes some settings for the duration of the macro.
 	performanceOpts = {
 		countThreshold = 200,
-		lazyredraw = true, -- temporarily enable lazyredraw, see `:h lazyredraw`
-		noSystemClipboard = true, -- temporarily remove `+`/`*` from clipboard
+		lazyredraw = true, -- enable lazyredraw (see `:h lazyredraw`)
+		noSystemClipboard = true, -- remove `+`/`*` from clipboard option
+		autocmdEventsIgnore = { -- temporarily ignore these autocmd events
+			"TextChangedI",
+			"TextChanged",
+			"InsertLeave",
+			"InsertEnter",
+			"InsertCharPre",
+		},
 	}
 
 	-- [experimental] partially share keymaps with nvim-dap.
