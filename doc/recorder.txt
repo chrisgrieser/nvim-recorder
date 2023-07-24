@@ -74,11 +74,11 @@ CONFIGURATION ~
     
         -- default keymaps
         mapping = {
-            startStopRecording = "q",
+            startStopRecording = "q", -- currently cannot be F-key, see https://github.com/chrisgrieser/nvim-recorder/issues/8
             playMacro = "Q",
             switchSlot = "<C-q>",
             editMacro = "cq",
-            yankMacro = "yq", -- also decodes it for turning macros to mappings
+            yankMacro = "yq",
             addBreakPoint = "", --  this should be a string you don't use in insert mode during a macro
         },
     
