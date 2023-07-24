@@ -245,13 +245,6 @@ function M.setup(config)
 	logLevel = config.logLevel or level.INFO
 	lessNotifications = config.lessNotifications or false
 
-	-- clearing
-	if config.clear then
-		for _, reg in pairs(macroRegs) do
-			setMacro(reg, "")
-		end
-	end
-
 	-- performance opts
 	local defaultPerfOpts = {
 		countThreshold = 100,
@@ -282,6 +275,13 @@ function M.setup(config)
 				level.ERROR
 			)
 			return
+		end
+	end
+
+	-- clearing
+	if config.clear then
+		for _, reg in pairs(macroRegs) do
+			setMacro(reg, "")
 		end
 	end
 
