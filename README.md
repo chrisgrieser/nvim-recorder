@@ -19,7 +19,8 @@ Enhance the usage of macros in Neovim.
 - __Macro Breakpoints__ for easier debugging of macros. Breakpoints can also be set after the recording and are automatically ignored when triggering a macro with a count.
 - __Status line components__: Particularly useful if you use `cmdheight=0` where the recording status is not visible.
 - __Macro-to-Mapping__: Copy a macro in decoded form for mappings to your default register.
-- __Various quality-of-life features__: notifications with macro content, the ability to cancel a recording, a command to edit macros, automatically setting [`lazyredraw`](https://neovim.io/doc/user/options.html#'lazyredraw') when using a high count, …
+- __Various quality-of-life features__: notifications with macro content, the ability to cancel a recording, a command to edit macros, 
+- __Performance Optimizations for large macros__: When the macro is triggered with a high count, temporarily enable settings like [`lazyredraw`](https://neovim.io/doc/user/options.html#'lazyredraw') during the macro. 
 - Uses up-to-date nvim features like `vim.ui.input` or `vim.notify`. This means you can get confirmation notices with plugins like [nvim-notify](https://github.com/rcarriga/nvim-notify).
 - Written 100% in lua. Lightweight (~300 LoC).
 
@@ -73,16 +74,22 @@ require("recorder").setup {
 	-- (Note that by default, nvim-notify does not show the levels trace & debug.)
 	logLevel = vim.log.levels.INFO,
 
-	-- If enabled, only essential or critical notifications are sent.
+	-- If enabled, only critical notifications are sent.
 	-- If you do not use a plugin like nvim-notify, set this to `true`
-	-- to remove otherwise annoying notifications.
+	-- to remove otherwise annoying messages.
 	lessNotifications = false,
 
-	-- When the number of counts is above this value, automatically
-	-- enable`lazyredraw` for the duration of the macro (see `:h lazyredraw`).
-	lazyredrawThreshold = 500,
+	-- Performance optimzations for macros with high count. When `playMacro` is
+	-- triggered with a count higher than the threshold, nvim-recorder
+	-- temporarily changes changes some settings for the duration of the macro.
+	performanceOpts = {
+		countThreshold = 200,
+		lazyredraw = true, -- temporarily enable lazyredraw, see `:h lazyredraw`
+		noSystemClipboard = true, -- temporarily remove `+`/`*` from clipboard
+	}
 
-	-- experimental, see README
+	-- [experimental] partially share keymaps with nvim-dap.
+	-- (See README for further explanations.)
 	dapSharedKeymaps = false,
 }
 ```

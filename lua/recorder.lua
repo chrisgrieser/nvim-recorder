@@ -15,7 +15,8 @@ local function isPlaying() return fn.reg_executing() ~= "" end
 local function normal(cmdStr) vim.cmd.normal { cmdStr, bang = true } end
 
 local macroRegs, slotIndex, logLevel, lessNotifications
-local toggleKey, breakPointKey, dapSharedKeymaps, lazyredrawThreshold
+local toggleKey, breakPointKey, dapSharedKeymaps
+local perf = {}
 local M = {}
 
 local breakCounter = 0 -- resets break counter on plugin reload
@@ -69,7 +70,8 @@ local function playRecording()
 	local macro = getMacro(reg)
 	local hasBreakPoints = macro:find(vim.pesc(breakPointKey))
 	local countGiven = v.count ~= 0
-	local useLazyRedraw = v.count >= lazyredrawThreshold
+	local useLazyRedraw = v.count >= perf.threshold and perf.lazyredraw and not (opt.lazyredraw:get() == true)
+	local noSystemClipboard = v.count >= perf.threshold and perf.noSystemclipboard and (opt.clipboard:get() ~= "")
 
 	-- Guard Clause 1: Toggle Breakpoint instead of Macro
 	-- WARN undocumented and prone to change https://github.com/mfussenegger/nvim-dap/discussions/810#discussioncomment-4623606
@@ -85,7 +87,9 @@ local function playRecording()
 	-- Guard Clause 2: Recursively play macro
 	if isRecording() then
 		vim.notify(
-			"Playing the macro while it is recording would cause recursion problems. Aborting. (You can still use recursive macros by using `@" .. reg .. "`)",
+			"Playing the macro while it is recording would cause recursion problems. Aborting. (You can still use recursive macros by using `@"
+				.. reg
+				.. "`)",
 			level.ERROR
 		)
 		normal("q") -- end recording
@@ -119,9 +123,17 @@ local function playRecording()
 
 	-- Execute Macro (without breakpoints)
 	else
-		if useLazyRedraw and opt.lazyredraw:get() == false then opt.lazyredraw = true end
+		if useLazyRedraw then opt.lazyredraw = true end
+		local prevClipboardOpt
+		if noSystemClipboard then
+			opt.clipboard = ""
+			prevClipboardOpt = opt.clipboard:get()
+		end
+
 		normal(v.count1 .. "@" .. reg)
+
 		if useLazyRedraw then opt.lazyredraw = false end
+		if noSystemClipboard then opt.clipboard = prevClipboardOpt end
 	end
 end
 
@@ -199,8 +211,13 @@ end
 ---@field mapping maps individual mappings
 ---@field logLevel integer log level (vim.log.levels)
 ---@field lessNotifications boolean plugin is less verbose, shows only essential or critical notifications
----@field lazyredrawThreshold boolean when the number of counts is above this value, `lazyredraw` will be temporarily enabled during macro execution
+---@field performanceOpts perfOpts various performance options
 ---@field dapSharedKeymaps boolean (experimental) partially share keymaps with dap
+
+---@class perfOpts
+---@field countThreshold number if count used is higher than threshold, the following performance optimizations are applied
+---@field lazyredraw boolean :h lazyredraw
+---@field noSystemClipboard boolean no `*` or `+` in clipboard https://vi.stackexchange.com/a/31888
 
 ---@class maps
 ---@field startStopRecording string
@@ -216,12 +233,31 @@ end
 function M.setup(config)
 	config = config or {}
 	slotIndex = 1 -- initial starting slot
-	macroRegs = config.slots or { "a", "b" }
+
+	-- General settings
 	logLevel = config.logLevel or level.INFO
 	lessNotifications = config.lessNotifications or false
-	lazyredrawThreshold = config.lazyredrawThreshold or 500
 
-	-- validation of slots
+	-- clearing
+	if config.clear then
+		for _, reg in pairs(macroRegs) do
+			setMacro(reg, "")
+		end
+	end
+
+	-- performance opts
+	local defaultPerfOpts = {
+		countThreshold = 1,
+		lazyredraw = true,
+		noSystemClipboard = true,
+	}
+	if not config.performanceOpts then config.performanceOpts = defaultPerfOpts end
+	perf.countThreshold = config.performanceOpts.countThreshold or defaultPerfOpts.countThreshold
+	perf.lazyredraw = config.performanceOpts.lazyredraw or defaultPerfOpts.lazyredraw
+	perf.noSystemClipboard = config.performanceOpts.noSystemClipboard or defaultPerfOpts.noSystemClipboard
+
+	-- macro slots (+ validate them)
+	macroRegs = config.slots or { "a", "b" }
 	for _, reg in pairs(macroRegs) do
 		if not (reg:find("^%l$")) then
 			vim.notify(
@@ -232,7 +268,7 @@ function M.setup(config)
 		end
 	end
 
-	-- set keymaps
+	-- keymaps
 	local defaultKeymaps = {
 		startStopRecording = "q",
 		playMacro = "Q",
@@ -265,13 +301,6 @@ function M.setup(config)
 	keymap("n", breakPointKey, addBreakPoint, { desc = desc1 })
 	local desc2 = dapSharedKeymaps and "/ Continue/Play" or " Play Macro"
 	keymap("n", playKey, playRecording, { desc = desc2 })
-
-	-- clearing
-	if config.clear then
-		for _, reg in pairs(macroRegs) do
-			setMacro(reg, "")
-		end
-	end
 end
 
 --------------------------------------------------------------------------------
