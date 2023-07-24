@@ -50,7 +50,7 @@ local function toggleRecording()
 	-- NOTE the macro key records itself, so it has to be removed from the
 	-- register. As this function has to know the variable length of the
 	-- LHS key that triggered it, it has to be passed in via .setup()-function
-	local decodedToggleKey = fn.keytrans(toggleKey)
+	local decodedToggleKey = vim.api.nvim_replace_termcodes(toggleKey, true, true, true)
 	local recording = getMacro(reg):sub(1, -1 * (#decodedToggleKey + 1))
 	setMacro(reg, recording)
 
@@ -100,10 +100,10 @@ local function playRecording()
 	end
 
 	local hasBreakPoints = macro:find(vim.pesc(breakPointKey))
-	local useLazyRedraw = v.count >= perf.threshold
+	local useLazyRedraw = v.count >= perf.countThreshold
 		and perf.lazyredraw
 		and not (opt.lazyredraw:get() == true)
-	local noSystemClipboard = v.count >= perf.threshold
+	local noSystemClipboard = v.count >= perf.countThreshold
 		and perf.noSystemclipboard
 		and (opt.clipboard:get() ~= "")
 
