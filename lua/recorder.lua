@@ -100,10 +100,10 @@ local function playRecording()
 	end
 
 	local hasBreakPoints = macro:find(vim.pesc(breakPointKey))
-	local useLazyRedraw = v.count >= perf.threshold
+	local useLazyRedraw = v.count >= perf.countThreshold
 		and perf.lazyredraw
 		and not (opt.lazyredraw:get() == true)
-	local noSystemClipboard = v.count >= perf.threshold
+	local noSystemClipboard = v.count >= perf.countThreshold
 		and perf.noSystemclipboard
 		and (opt.clipboard:get() ~= "")
 
