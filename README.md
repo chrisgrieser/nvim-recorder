@@ -1,5 +1,5 @@
-# nvim-recorder 📹
-
+<!-- LTeX: enabled=false -->
+# nvim-recorder 📹 <!-- LTeX: enabled=true -->
 Enhance the usage of macros in Neovim.
 
 <!--toc:start-->
@@ -21,27 +21,29 @@ Enhance the usage of macros in Neovim.
 - __Macro-to-Mapping__: Copy a macro in decoded form for mappings to your default register.
 - __Various quality-of-life features__: notifications with macro content, the ability to cancel a recording, a command to edit macros, automatically setting [`lazyredraw`](https://neovim.io/doc/user/options.html#'lazyredraw') when using a high count, …
 - Uses up-to-date nvim features like `vim.ui.input` or `vim.notify`. This means you can get confirmation notices with plugins like [nvim-notify](https://github.com/rcarriga/nvim-notify).
-- Written 100% in lua. Lightweight (~250 LoC).
+- Written 100% in lua. Lightweight (~300 LoC).
 
 ## Setup
 
 ### Installation
 
 ```lua
+-- lazy.nvim
+{
+	"chrisgrieser/nvim-recorder",
+	opts = {}, -- required even with default settings, since it calls `setup()`
+	dependencies = "rcarriga/nvim-notify", -- optional dependency
+},
+
 -- packer
 use {
 	"chrisgrieser/nvim-recorder",
 	config = function() require("recorder").setup() end,
+	requires = "rcarriga/nvim-notify", -- optional dependency
 }
-
--- lazy.nvim
-{
-	"chrisgrieser/nvim-recorder",
-	opts = {},
-},
 ```
 
-Calling `setup()` (or lazy's `opts`) is __required__. 
+Calling `setup()` (or `lazy`'s `opts`) is __required__. 
 
 Using a notification plugin like [nvim-notify](https://github.com/rcarriga/nvim-notify) is not necessary, but recommended.
 
@@ -51,10 +53,10 @@ Using a notification plugin like [nvim-notify](https://github.com/rcarriga/nvim-
 -- default values
 require("recorder").setup {
 	-- Named registers where macros are saved. The first register is the default
-	-- register/macro-slot used after startup. 
-	slots = {"a", "b"},
+	-- register/macro-slot used after startup.
+	slots = { "a", "b" },
 
-	-- default keymaps, see README for description what the commands do
+	-- default keymaps
 	mapping = {
 		startStopRecording = "q",
 		playMacro = "Q",
@@ -64,14 +66,14 @@ require("recorder").setup {
 		addBreakPoint = "##", -- ⚠️ this should be a string you don't use in insert mode during a macro
 	},
 
-	-- clears all macros-slots on startup
+	-- Clears all macros-slots on startup.
 	clear = false,
 
-	-- log level used for any notification, mostly relevant for nvim-notify
-	-- (note that by default, nvim-notify does not show the levels trace and debug.)
+	-- Log level used for any notification, mostly relevant for nvim-notify.
+	-- (Note that by default, nvim-notify does not show the levels trace & debug.)
 	logLevel = vim.log.levels.INFO,
 
-	-- if enabled, only essential or critical notifications are sent.
+	-- If enabled, only essential or critical notifications are sent.
 	-- If you do not use a plugin like nvim-notify, set this to `true`
 	-- to remove otherwise annoying notifications.
 	lessNotifications = false,
@@ -90,11 +92,11 @@ If you want to handle multiple macros or use `cmdheight=0`, it is recommended to
 ### Status Line Components
 
 ```lua
--- indicates whether you are currently recording. Useful if you are using 
+-- Indicates whether you are currently recording. Useful if you are using
 -- `cmdheight=0`, where recording-status is not visible.
 require("recorder").recordingStatus()
 
--- displays non-empty macro-slots (registers) and indicates the selected ones. 
+-- Displays non-empty macro-slots (registers) and indicates the selected ones.
 -- Only displayed when *not* recording. Slots with breakpoints get an extra `#`.
 -- 💡 use with the config `clear = true` to see recordings you made this session.
 require("recorder").displaySlots()
@@ -119,13 +121,13 @@ lualine_z = {
 - `startStopRecording`: Starts recording to the current macro slot (so you do not need to specify a register). Press again to end the recording.
 - `playMacro`: Plays the macro in the current slot (without the need to specify a register).
 - `switchSlot`: Cycles through the registers you specified in the configuration. Also show a notification with the slot and its content. (The currently selected slot can be seen in the [status line component](#status-line-components).)
-- `editMacro`: Modify the macro recorded in the active slot. (Be aware that these are the keystrokes in "encoded" form.)
+- `editMacro`: Edit the macro recorded in the active slot. (Be aware that these are the keystrokes in "encoded" form.)
 - `yankMacro`: Copies the current macro in decoded form that can be used to create a mapping from it. Breakpoints are removed from the macro.
 
 > 💡 For recursive macros (playing a macro inside a macro), you can still use the default command `@a`.
 
 ### Macro Breakpoints
-*nvim-recorder* allows you to set breakpoints in your macros which can be helpful for debugging macros. Breakpoints are automatically ignored when you trigger the macro with a count.
+`nvim-recorder` allows you to set breakpoints in your macros, which can be helpful for debugging macros. Breakpoints are automatically ignored when you trigger the macro with a count.
 
 __Setting Breakpoints__  
 1. *During a recording,* press the `addBreakPoint` key (default: `##`) in normal mode. 
@@ -158,13 +160,14 @@ Note that this feature is experimental, since the [respective API from nvim-dap 
 In my day job, I am a sociologist studying the social mechanisms underlying the digital economy. For my PhD project, I investigate the governance of the app economy and how software ecosystems manage the tension between innovation and compatibility. If you are interested in this subject, feel free to get in touch.
 
 __Blog__  
-I also occassionally blog about vim: [Nano Tips for Vim](https://nanotipsforvim.prose.sh)
+I also occasionally blog about vim: [Nano Tips for Vim](https://nanotipsforvim.prose.sh)
 
 __Profiles__
 - [Discord](https://discordapp.com/users/462774483044794368/)
 - [Academic Website](https://chris-grieser.de/)
 - [GitHub](https://github.com/chrisgrieser/)
 - [Twitter](https://twitter.com/pseudo_meta)
+- [Mastodon](https://pkm.social/@pseudometa)
 - [ResearchGate](https://www.researchgate.net/profile/Christopher-Grieser)
 - [LinkedIn](https://www.linkedin.com/in/christopher-grieser-ba693b17a/)
 
