@@ -76,7 +76,7 @@ CONFIGURATION ~
     
         -- default keymaps
         mapping = {
-            startStopRecording = "q", -- currently cannot be F-key, see https://github.com/chrisgrieser/nvim-recorder/issues/8
+            startStopRecording = "q",
             playMacro = "Q",
             switchSlot = "<C-q>",
             editMacro = "cq",
