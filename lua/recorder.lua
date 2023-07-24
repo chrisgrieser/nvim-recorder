@@ -64,6 +64,14 @@ end
 
 ---play the macro recorded in current slot
 local function playRecording()
+	-- macro variables
+	local reg = macroRegs[slotIndex]
+	local macro = getMacro(reg)
+	local hasBreakPoints = macro:find(vim.pesc(breakPointKey))
+	local countGiven = v.count ~= 0
+	local useLazyRedraw = v.count >= lazyredrawThreshold
+
+	-- Guard Clause 1: Toggle Breakpoint instead of Macro
 	-- WARN undocumented and prone to change https://github.com/mfussenegger/nvim-dap/discussions/810#discussioncomment-4623606
 	if dapSharedKeymaps then
 		-- nested to avoid requiring dap for lazyloaders
@@ -74,10 +82,10 @@ local function playRecording()
 		end
 	end
 
-	local reg = macroRegs[slotIndex]
+	-- Guard Clause 2: Recursively play macro
 	if isRecording() then
 		vim.notify(
-			"Playing the macro while it is recording would cause recursion problems. Aborting recording.",
+			"Playing the macro while it is recording would cause recursion problems. Aborting. (You can still use recursive macros by using `@" .. reg .. "`)",
 			level.ERROR
 		)
 		normal("q") -- end recording
@@ -85,18 +93,14 @@ local function playRecording()
 		return
 	end
 
-	local macro = getMacro(reg)
-	local hasBreakPoints = macro:find(vim.pesc(breakPointKey))
-	local countGiven = v.count ~= 0
-	local useLazyRedraw = v.count >= lazyredrawThreshold
-
-	-- empty slot
+	-- Guard Clause 3: Slot is empty
 	if macro == "" then
 		vim.notify("Macro Slot [" .. reg .. "] is empty.", level.WARN)
 		return
+	end
 
-	-- with breakpoints
-	elseif hasBreakPoints and not countGiven then
+	-- Execute Macro (with breakpoints)
+	if hasBreakPoints and not countGiven then
 		breakCounter = breakCounter + 1
 		local macroParts = vim.split(macro, breakPointKey, {})
 		local partialMacro = macroParts[breakCounter]
@@ -113,7 +117,7 @@ local function playRecording()
 			breakCounter = 0
 		end
 
-	-- normal macro
+	-- Execute Macro (without breakpoints)
 	else
 		if useLazyRedraw and opt.lazyredraw:get() == false then opt.lazyredraw = true end
 		normal(v.count1 .. "@" .. reg)
