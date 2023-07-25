@@ -135,6 +135,7 @@ local function playRecording()
 		opt.eventignore = perf.autocmdEventsIgnore
 
 		normal(v.count1 .. "@" .. reg)
+		---@diagnostic disable-next-line: assign-type-mismatch neodev buggy here?
 		if perf.lazyredraw then vim.opt.lazyredraw = original.lazyredraw end
 		if perf.noSystemclipboard then opt.clipboard = original.clipboard end
 		opt.eventignore = original.eventignore
@@ -355,7 +356,7 @@ function M.displaySlots()
 
 	local output = table.concat(out)
 	if output == "[ ]" then return "" end
-	return " " .. output
+	return "󰃽 " .. output
 end
 
 --------------------------------------------------------------------------------
