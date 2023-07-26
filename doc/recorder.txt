@@ -103,7 +103,7 @@ CONFIGURATION ~
         -- triggered with a count higher than the threshold, nvim-recorder
         -- temporarily changes changes some settings for the duration of the macro.
         performanceOpts = {
-            countThreshold = 200,
+            countThreshold = 100,
             lazyredraw = true, -- enable lazyredraw (see `:h lazyredraw`)
             noSystemClipboard = true, -- remove `+`/`` from clipboard option
             autocmdEventsIgnore = { -- temporarily ignore these autocmd events
