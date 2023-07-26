@@ -14,7 +14,7 @@ local function isPlaying() return fn.reg_executing() ~= "" end
 ---@param cmdStr any
 local function normal(cmdStr) vim.cmd.normal { cmdStr, bang = true } end
 
-local macroRegs, slotIndex, logLevel, lessNotifications
+local macroRegs, slotIndex, logLevel, lessNotifications, useNerdfontIcons
 local toggleKey, breakPointKey, dapSharedKeymaps
 local perf = {}
 local M = {}
@@ -222,6 +222,7 @@ end
 ---@field lessNotifications boolean plugin is less verbose, shows only essential or critical notifications
 ---@field performanceOpts perfOpts various performance options
 ---@field dapSharedKeymaps boolean (experimental) partially share keymaps with dap
+---@field useNerdfontIcons boolean currently only relevant for status bar components
 
 ---@class perfOpts
 ---@field countThreshold number if count used is higher than threshold, the following performance optimizations are applied
@@ -247,6 +248,7 @@ function M.setup(config)
 	-- General settings
 	logLevel = config.logLevel or level.INFO
 	lessNotifications = config.lessNotifications or false
+	useNerdfontIcons = config.useNerdfontIcons or true
 
 	-- performance opts
 	local defaultPerfOpts = {
@@ -330,7 +332,8 @@ end
 ---@return string
 function M.recordingStatus()
 	if not isRecording() then return "" end
-	return "  Recording… [" .. macroRegs[slotIndex] .. "]"
+	local icon = useNerdfontIcons and "  " or ""
+	return icon .. "Recording… [" .. macroRegs[slotIndex] .. "]"
 end
 
 ---returns non-empty for status line plugins.
@@ -356,7 +359,8 @@ function M.displaySlots()
 
 	local output = table.concat(out)
 	if output == "[ ]" then return "" end
-	return "󰃽 " .. output
+	local icon = useNerdfontIcons and "󰃽 " or "RECs "
+	return icon .. output
 end
 
 --------------------------------------------------------------------------------

@@ -80,6 +80,9 @@ require("recorder").setup {
 	-- to remove otherwise annoying messages.
 	lessNotifications = false,
 
+	-- Enable nerdfont icons in the status bar components.
+	useNerdfontIcons = true,
+
 	-- Performance optimzations for macros with high count. When `playMacro` is
 	-- triggered with a count higher than the threshold, nvim-recorder
 	-- temporarily changes changes some settings for the duration of the macro.
