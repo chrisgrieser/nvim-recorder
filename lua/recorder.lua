@@ -122,6 +122,14 @@ local function playRecording()
 
 	-- macro (w/ perf optimizations)
 	elseif usePerfOptimizations then
+		-- message to avoid confusion by the user due to performance optimizations
+		local msg = "Running macro with performance optimizations…"
+		if perf.lazyredraw then
+			msg = msg
+				.. "\nnvim might appear to freeze due to lazy redrawing. \nThis is to be expected and not a bug."
+		end
+		nonEssentialNotify(msg)
+
 		local original = {}
 		if perf.lazyredraw then
 			original.lazyredraw = opt.lazyredraw:get()
@@ -134,11 +142,18 @@ local function playRecording()
 		original.eventignore = opt.eventignore:get()
 		opt.eventignore = perf.autocmdEventsIgnore
 
-		normal(v.count1 .. "@" .. reg)
-		---@diagnostic disable-next-line: assign-type-mismatch neodev buggy here?
-		if perf.lazyredraw then vim.opt.lazyredraw = original.lazyredraw end
-		if perf.noSystemclipboard then opt.clipboard = original.clipboard end
-		opt.eventignore = original.eventignore
+		-- if notification is shown, defer to ensure it is displayed 
+		-- (e.g., nvim-notify animations delay the display a bit)
+		local delay = lessNotifications and 0 or 1500
+		local count = v.count1 -- counts needs to be saved due to scoping by defer_fn
+		vim.defer_fn(function()
+			normal(count .. "@" .. reg)
+
+			---@diagnostic disable-next-line: assign-type-mismatch neodev buggy here?
+			if perf.lazyredraw then vim.opt.lazyredraw = original.lazyredraw end
+			if perf.noSystemclipboard then opt.clipboard = original.clipboard end
+			opt.eventignore = original.eventignore
+		end, delay)
 
 	-- macro (regular)
 	else
