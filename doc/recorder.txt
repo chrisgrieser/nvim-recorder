@@ -1,4 +1,4 @@
-*recorder.txt*            For NVIM v0.8.0            Last change: 2023 July 25
+*recorder.txt*            For NVIM v0.8.0            Last change: 2023 July 26
 
 ==============================================================================
 Table of Contents                                 *recorder-table-of-contents*
@@ -95,6 +95,9 @@ CONFIGURATION ~
         -- If you do not use a plugin like nvim-notify, set this to `true`
         -- to remove otherwise annoying messages.
         lessNotifications = false,
+    
+        -- Enable nerdfont icons in the status bar components.
+        useNerdfontIcons = true,
     
         -- Performance optimzations for macros with high count. When `playMacro` is
         -- triggered with a count higher than the threshold, nvim-recorder
