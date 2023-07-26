@@ -3,26 +3,27 @@
 Enhance the usage of macros in Neovim.
 
 <!--toc:start-->
-- [Features](#features)
-- [Setup](#setup)
-	- [Installation](#installation)
-	- [Configuration](#configuration)
-	- [Status Line Components](#status-line-components)
-- [Usage](#usage)
-	- [Basics](#basics)
-	- [Macro Breakpoints](#macro-breakpoints)
-- [About me](#about-me)
+  - [Features](#features)
+  - [Setup](#setup)
+    - [Installation](#installation)
+    - [Configuration](#configuration)
+    - [Status Line Components](#status-line-components)
+  - [Basic Usage](#basic-usage)
+  - [Advanced Usage](#advanced-usage)
+    - [Performance Optimizations](#performance-optimizations)
+    - [Macro Breakpoints](#macro-breakpoints)
+    - [Lazy-loading the plugin](#lazy-loading-the-plugin)
+  - [About me](#about-me)
 <!--toc:end-->
 
 ## Features
 - __Simplified controls__: One key to start and stop recording, a second key for playing the macro. Instead of `qa … q @a @@`, you just do `q … q Q Q`.[^1]
 - __Macro Breakpoints__ for easier debugging of macros. Breakpoints can also be set after the recording and are automatically ignored when triggering a macro with a count.
 - __Status line components__: Particularly useful if you use `cmdheight=0` where the recording status is not visible.
-- __Macro-to-Mapping__: Copy a macro in decoded form for mappings to your default register.
+- __Macro-to-Mapping__: Copy a macro, so you can save it as a mapping.
 - __Various quality-of-life features__: notifications with macro content, the ability to cancel a recording, a command to edit macros, 
-- __Performance Optimizations for large macros__: When the macro is triggered with a high count, temporarily enable settings like [`lazyredraw`](https://neovim.io/doc/user/options.html#'lazyredraw') during the macro. 
-- Uses up-to-date nvim features like `vim.ui.input` or `vim.notify`. This means you can get confirmation notices with plugins like [nvim-notify](https://github.com/rcarriga/nvim-notify).
-- Written 100% in lua. Lightweight (~300 LoC).
+- __Performance Optimizations for large macros__: When the macro is triggered with a high count, temporarily enable some performance improvements.
+- Uses up-to-date nvim features like `vim.notify`. This means you can get confirmation notices with plugins like [nvim-notify](https://github.com/rcarriga/nvim-notify).
 
 ## Setup
 
@@ -32,21 +33,19 @@ Enhance the usage of macros in Neovim.
 -- lazy.nvim
 {
 	"chrisgrieser/nvim-recorder",
+	dependencies = "rcarriga/nvim-notify", -- optional
 	opts = {}, -- required even with default settings, since it calls `setup()`
-	dependencies = "rcarriga/nvim-notify", -- optional dependency
 },
 
 -- packer
 use {
 	"chrisgrieser/nvim-recorder",
+	requires = "rcarriga/nvim-notify", -- optional
 	config = function() require("recorder").setup() end,
-	requires = "rcarriga/nvim-notify", -- optional dependency
 }
 ```
 
 Calling `setup()` (or `lazy`'s `opts`) is __required__. 
-
-Using a notification plugin like [nvim-notify](https://github.com/rcarriga/nvim-notify) is not necessary, but recommended.
 
 ### Configuration
 
@@ -105,7 +104,7 @@ require("recorder").setup {
 }
 ```
 
-If you want to handle multiple macros or use `cmdheight=0`, it is recommended to also set up the status line components.
+If you want to handle multiple macros or use `cmdheight=0`, it is recommended to also set up the status line components:
 
 ### Status Line Components
 
@@ -116,8 +115,9 @@ require("recorder").recordingStatus()
 
 -- Displays non-empty macro-slots (registers) and indicates the selected ones.
 -- Only displayed when *not* recording. Slots with breakpoints get an extra `#`.
--- 💡 use with the config `clear = true` to see recordings you made this session.
 require("recorder").displaySlots()
+
+-- 💡 use with the config `clear = true` to see recordings you made this session.
 ```
 
 Example for adding the status line components to [lualine](https://github.com/nvim-lualine/lualine.nvim):
@@ -130,12 +130,12 @@ lualine_z = {
 	{ require("recorder").recordingStatus },
 },
 -- 💡 put the components in different status line segments so they have 
--- a different color, making the recording status more distinguishable
+-- a different color, making the recording status more distinguishable 
+-- from saved recordings
 ```
 
-## Usage
+## Basic Usage
 
-### Basics
 - `startStopRecording`: Starts recording to the current macro slot (so you do not need to specify a register). Press again to end the recording.
 - `playMacro`: Plays the macro in the current slot (without the need to specify a register).
 - `switchSlot`: Cycles through the registers you specified in the configuration. Also show a notification with the slot and its content. (The currently selected slot can be seen in the [status line component](#status-line-components).)
@@ -143,6 +143,16 @@ lualine_z = {
 - `yankMacro`: Copies the current macro in decoded form that can be used to create a mapping from it. Breakpoints are removed from the macro.
 
 > 💡 For recursive macros (playing a macro inside a macro), you can still use the default command `@a`.
+
+## Advanced Usage
+
+### Performance Optimizations
+Running long macros or macros with a high count, can be demanding on the system and result in lags. For this reason, `nvim-recorder` provides some performance optimizations that are temporarily enabled when a macro with a high count is run.
+
+Note that these optimizations do have some potential drawbacks. 
+- [`lazyredraw`](https://neovim.io/doc/user/options.html#'lazyredraw') disables redrawing of the screen, which makes it harder to notice edge cases not considered in the macro. It may also appear as if the screen if frozen for a while.
+- Disabling the system clipboard is mostly safe, if you do not intend to copy content to it with the macro.
+- Ignoring certain autocmds is not recommended, when you rely on certain plugin functionality during the macro, since it can potentially disrupt those plugin's effect.
 
 ### Macro Breakpoints
 `nvim-recorder` allows you to set breakpoints in your macros, which can be helpful for debugging macros. Breakpoints are automatically ignored when you trigger the macro with a count.
@@ -172,6 +182,47 @@ macro-slot instead.
 
 Note that this feature is experimental, since the [respective API from nvim-dap is non-public and can be changed without deprecation notice](https://github.com/mfussenegger/nvim-dap/discussions/810#discussioncomment-4623606).
 
+### Lazy-loading the plugin
+The plugin can be lazy-loaded, but the setup is a bit more complex than with other plugins. 
+
+`nvim-recorder` is best lazy-loaded on the keymappings for `startStopRecording` and `playMacro`. However, it is still required to set the keymappings to the `setup` call. 
+
+However, since using the status line components also results in loading the plugin. The loading of the status line components can be delayed by setting them in the plugin's `config`. The only drawback of this method is that no component is shown when until you start or play a recording (which you can completely disregard when you set `clear = true`, though).
+
+Nonetheless, the plugin is pretty lightweight (~350 lines of code), so not lazy-loading it should not have a big impact.
+
+```lua
+-- minimal config for lazy-loading with lazy.nvim
+{
+	"chrisgrieser/nvim-recorder",
+	dependencies = "rcarriga/nvim-notify",
+	keys = {
+		-- these must match the keys in the mapping config below
+		{ "q", desc = " Start Recording" },
+		{ "Q", desc = " Play Recording" },
+	},
+	config = function()
+		require("recorder").setup({
+			mapping = {
+				startStopRecording = "q",
+				playMacro = "Q",
+			},
+		})
+
+			local lualineZ = require("lualine").get_config().sections.lualine_z or {}
+			local lualineY = require("lualine").get_config().sections.lualine_y or {}
+			table.insert(lualineZ, { require("recorder").recordingStatus })
+			table.insert(lualineY, { require("recorder").displaySlots })
+
+			require("lualine").setup {
+				tabline = {
+					lualine_y = lualineY,
+					lualine_z = lualineZ,
+				},
+			}
+	end,
+},
+```
 
 <!-- vale Google.FirstPerson = NO -->
 ## About me
