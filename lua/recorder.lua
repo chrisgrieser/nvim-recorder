@@ -136,7 +136,7 @@ local function playRecording()
 
 		local original = {}
 		if perf.lazyredraw then
-			---@diagnostic disable-next-line: assign-type-mismatch neodev buggy here?
+			---@diagnostic disable-next-line: param-type-mismatch neodev buggy here?
 			original.lazyredraw = opt.lazyredraw:get()
 			opt.lazyredraw = true
 		end
@@ -290,6 +290,7 @@ function M.setup(userConfig)
 	local config = vim.tbl_deep_extend("keep", userConfig, defaultConfig)
 
 	-- validate macro slots
+	macroRegs = config.slots or { "a", "b" }
 	for _, reg in pairs(macroRegs) do
 		if not (reg:find("^%l$")) then
 			vim.notify(
