@@ -57,7 +57,6 @@ require("recorder").setup {
 	-- startup.
 	slots = { "a", "b" },
 
-	-- default keymaps
 	mapping = {
 		startStopRecording = "q",
 		playMacro = "Q",
@@ -96,7 +95,7 @@ require("recorder").setup {
 			"InsertEnter",
 			"InsertCharPre",
 		},
-	}
+	},
 
 	-- [experimental] partially share keymaps with nvim-dap.
 	-- (See README for further explanations.)

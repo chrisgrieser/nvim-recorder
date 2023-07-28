@@ -1,3 +1,5 @@
+local M = {}
+
 local fn = vim.fn
 local v = vim.v
 local opt = vim.opt
@@ -6,20 +8,14 @@ local setMacro = vim.fn.setreg
 local keymap = vim.keymap.set
 local level = vim.log.levels
 
----@return boolean
-local function isRecording() return fn.reg_recording() ~= "" end
-local function isPlaying() return fn.reg_executing() ~= "" end
+-- internal vars
+local macroRegs, slotIndex, logLevel, breakCounter
 
----runs `:normal` natively with bang
----@param cmdStr any
-local function normal(cmdStr) vim.cmd.normal { cmdStr, bang = true } end
-
-local macroRegs, slotIndex, logLevel, lessNotifications, useNerdfontIcons
-local toggleKey, breakPointKey, dapSharedKeymaps
+-- vars which can be set by the user
+local toggleKey, breakPointKey, dapSharedKeymaps, lessNotifications, useNerdfontIcons
 local perf = {}
-local M = {}
 
-local breakCounter = 0 -- resets break counter on plugin reload
+--------------------------------------------------------------------------------
 
 -- post vim.notify with configured log level.
 -- Posts no notifications if lessNotifications is true
@@ -27,6 +23,14 @@ local function nonEssentialNotify(msg)
 	if lessNotifications then return end
 	vim.notify(msg, logLevel)
 end
+
+---@return boolean
+local function isRecording() return fn.reg_recording() ~= "" end
+local function isPlaying() return fn.reg_executing() ~= "" end
+
+---runs `:normal` natively with bang
+---@param cmdStr any
+local function normal(cmdStr) vim.cmd.normal { cmdStr, bang = true } end
 
 --------------------------------------------------------------------------------
 -- COMMANDS
@@ -132,6 +136,7 @@ local function playRecording()
 
 		local original = {}
 		if perf.lazyredraw then
+			---@diagnostic disable-next-line: assign-type-mismatch neodev buggy here?
 			original.lazyredraw = opt.lazyredraw:get()
 			opt.lazyredraw = true
 		end
@@ -142,7 +147,7 @@ local function playRecording()
 		original.eventignore = opt.eventignore:get()
 		opt.eventignore = perf.autocmdEventsIgnore
 
-		-- if notification is shown, defer to ensure it is displayed 
+		-- if notification is shown, defer to ensure it is displayed
 		-- (e.g., nvim-notify animations delay the display a bit)
 		local delay = lessNotifications and 0 or 1500
 		local count = v.count1 -- counts needs to be saved due to scoping by defer_fn
@@ -253,41 +258,38 @@ end
 ---@field switchSlot string
 ---@field addBreakPoint string
 
----Setup Macro Plugin
----@param config configObj
--- selene: allow(high_cyclomatic_complexity)
-function M.setup(config)
-	config = config or {}
-	slotIndex = 1 -- initial starting slot
+---@param userConfig configObj
+function M.setup(userConfig)
+	-- initialize values on plugin load
+	slotIndex = 1
+	breakCounter = 0
 
-	-- General settings
-	logLevel = config.logLevel or level.INFO
-	lessNotifications = config.lessNotifications or false
-	useNerdfontIcons = config.useNerdfontIcons or true
-
-	-- performance opts
-	local defaultPerfOpts = {
-		countThreshold = 100,
-		lazyredraw = true,
-		noSystemClipboard = true,
-		autocmdEventsIgnore = {
-			"TextChangedI",
-			"TextChanged",
-			"InsertLeave",
-			"InsertEnter",
-			"InsertCharPre",
+	local defaultConfig = {
+		slots = { "a", "b" },
+		mapping = {
+			startStopRecording = "q",
+			playMacro = "Q",
+			switchSlot = "<C-q>",
+			editMacro = "cq",
+			yankMacro = "yq",
+			addBreakPoint = "##",
+		},
+		dapSharedKeymaps = false,
+		clear = false,
+		logLevel = vim.log.levels.INFO,
+		lessNotifications = false,
+		useNerdfontIcons = true,
+		performanceOpts = {
+			countThreshold = 100,
+			lazyredraw = true,
+			noSystemClipboard = true,
+			-- stylua: ignore
+			autocmdEventsIgnore = { "TextChangedI", "TextChanged", "InsertLeave", "InsertEnter", "InsertCharPre" },
 		},
 	}
-	if not config.performanceOpts then config.performanceOpts = defaultPerfOpts end
-	perf.countThreshold = config.performanceOpts.countThreshold or defaultPerfOpts.countThreshold
-	perf.lazyredraw = config.performanceOpts.lazyredraw or defaultPerfOpts.lazyredraw
-	perf.noSystemClipboard = config.performanceOpts.noSystemClipboard
-		or defaultPerfOpts.noSystemClipboard
-	perf.autocmdEventsIgnore = config.performanceOpts.autocmdEventsIgnore
-		or defaultPerfOpts.autocmdEventsIgnore
+	local config = vim.tbl_deep_extend("keep", userConfig, defaultConfig)
 
-	-- macro slots (+ validate them)
-	macroRegs = config.slots or { "a", "b" }
+	-- validate macro slots
 	for _, reg in pairs(macroRegs) do
 		if not (reg:find("^%l$")) then
 			vim.notify(
@@ -298,34 +300,23 @@ function M.setup(config)
 		end
 	end
 
-	-- clearing
+	-- clear macro slots
 	if config.clear then
 		for _, reg in pairs(macroRegs) do
 			setMacro(reg, "")
 		end
 	end
 
-	-- keymaps
-	local defaultKeymaps = {
-		startStopRecording = "q",
-		playMacro = "Q",
-		switchSlot = "<C-q>",
-		editMacro = "cq",
-		yankMacro = "yq",
-		addBreakPoint = "##",
-	}
-	if not config.mapping then config.mapping = defaultKeymaps end
-	toggleKey = config.mapping.startStopRecording or defaultKeymaps.startStopRecording
-	local playKey = config.mapping.playMacro or defaultKeymaps.playMacro
-	local switchKey = config.mapping.switchSlot or defaultKeymaps.switchSlot
-	local editKey = config.mapping.editMacro or defaultKeymaps.editMacro
-	local yankKey = config.mapping.yankMacro or defaultKeymaps.yankMacro
-	breakPointKey = config.mapping.addBreakPoint or defaultKeymaps.addBreakPoint
+	-- setup keymaps
+	toggleKey = config.mapping.startStopRecording
+	breakPointKey = config.mapping.addBreakPoint
+	local icon = config.useNerdfontIcons and " " or ""
+	local dapSharedIcon = config.useNerdfontIcons and " /  " or ""
 
-	keymap("n", toggleKey, toggleRecording, { desc = " Start/Stop Recording" })
-	keymap("n", switchKey, switchMacroSlot, { desc = " Switch Macro Slot" })
-	keymap("n", editKey, editMacro, { desc = " Edit Macro" })
-	keymap("n", yankKey, yankMacro, { desc = " Yank Macro" })
+	keymap("n", toggleKey, toggleRecording, { desc = icon .. "Start/Stop Recording" })
+	keymap("n", config.mapping.switchSlot, switchMacroSlot, { desc = icon .. "Switch Macro Slot" })
+	keymap("n", config.mapping.editMacro, editMacro, { desc = icon .. "Edit Macro" })
+	keymap("n", config.mapping.yankMacro, yankMacro, { desc = icon .. "Yank Macro" })
 
 	-- (experimental) if true, nvim-recorder and dap will use shared keymaps:
 	-- 1) `addBreakPoint` will map to `dap.toggle_breakpoint()` outside
@@ -334,10 +325,11 @@ function M.setup(config)
 	-- dap-breakpoint. If there is no dap breakpoint, will play the current
 	-- macro-slot instead
 	dapSharedKeymaps = config.dapSharedKeymaps or false
-	local desc1 = dapSharedKeymaps and "/ Breakpoint" or " Insert Macro Breakpoint."
+	local desc1 = dapSharedKeymaps and dapSharedIcon .. "Breakpoint"
+		or icon .. "Insert Macro Breakpoint."
 	keymap("n", breakPointKey, addBreakPoint, { desc = desc1 })
-	local desc2 = dapSharedKeymaps and "/ Continue/Play" or " Play Macro"
-	keymap("n", playKey, playRecording, { desc = desc2 })
+	local desc2 = dapSharedKeymaps and dapSharedIcon .. "Continue/Play" or icon .. "Play Macro"
+	keymap("n", config.mapping.playMacro, playRecording, { desc = desc2 })
 end
 
 --------------------------------------------------------------------------------
