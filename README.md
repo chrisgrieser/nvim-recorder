@@ -1,5 +1,7 @@
 <!-- LTeX: enabled=false -->
 # nvim-recorder 📹 <!-- LTeX: enabled=true -->
+<a href="https://dotfyle.com/plugins/chrisgrieser/nvim-recorder"><img src="https://dotfyle.com/plugins/chrisgrieser/nvim-recorder/shield" /></a>
+
 Enhance the usage of macros in Neovim.
 
 <!--toc:start-->
