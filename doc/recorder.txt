@@ -1,4 +1,4 @@
-*recorder.txt*            For NVIM v0.8.0            Last change: 2023 July 26
+*recorder.txt*            For NVIM v0.8.0            Last change: 2023 July 28
 
 ==============================================================================
 Table of Contents                                 *recorder-table-of-contents*
@@ -73,7 +73,6 @@ CONFIGURATION ~
         -- startup.
         slots = { "a", "b" },
     
-        -- default keymaps
         mapping = {
             startStopRecording = "q",
             playMacro = "Q",
@@ -112,7 +111,7 @@ CONFIGURATION ~
                 "InsertEnter",
                 "InsertCharPre",
             },
-        }
+        },
     
         -- [experimental] partially share keymaps with nvim-dap.
         -- (See README for further explanations.)
