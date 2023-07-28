@@ -80,7 +80,7 @@ require("recorder").setup {
 	-- to remove otherwise annoying messages.
 	lessNotifications = false,
 
-	-- Enable nerdfont icons in the status bar components.
+	-- Use nerdfont icons in the status bar components and keymap descriptions
 	useNerdfontIcons = true,
 
 	-- Performance optimzations for macros with high count. When `playMacro` is
