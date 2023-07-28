@@ -13,6 +13,8 @@ Table of Contents                                 *recorder-table-of-contents*
 ==============================================================================
 1. nvim-recorder                                     *recorder-nvim-recorder-*
 
+
+
 Enhance the usage of macros in Neovim.
 
 - |recorder-features|
