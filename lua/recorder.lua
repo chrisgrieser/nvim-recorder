@@ -105,7 +105,7 @@ local function playRecording()
 	-- EXECUTE MACRO
 	local countGiven = v.count ~= 0
 	local hasBreakPoints = macro:find(vim.pesc(breakPointKey))
-	local usePerfOptimizations = v.count >= perf.countThreshold
+	local usePerfOptimizations = v.count1 >= perf.countThreshold
 
 	-- macro (w/ breakpoints)
 	if hasBreakPoints and not countGiven then
