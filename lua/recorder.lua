@@ -289,6 +289,11 @@ function M.setup(userConfig)
 	}
 	local config = vim.tbl_deep_extend("keep", userConfig, defaultConfig)
 
+	-- settings to be used in globally
+	perf = config.performanceOpts
+	useNerdfontIcons = config.useNerdfontIcons
+	lessNotifications = config.lessNotifications
+
 	-- validate macro slots
 	macroRegs = config.slots or { "a", "b" }
 	for _, reg in pairs(macroRegs) do
