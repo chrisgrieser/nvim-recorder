@@ -24,7 +24,6 @@ local function nonEssentialNotify(msg)
 	vim.notify(msg, logLevel, { title = "nvim-recorder" })
 end
 
-
 ---send notification
 ---@param msg string
 ---@param loglevel? "info"|"trace"|"debug"|"warn"|"error"
@@ -339,6 +338,7 @@ function M.setup(userConfig)
 	keymap("n", config.mapping.switchSlot, switchMacroSlot, { desc = icon .. "Switch Macro Slot" })
 	keymap("n", config.mapping.editMacro, editMacro, { desc = icon .. "Edit Macro" })
 	keymap("n", config.mapping.yankMacro, yankMacro, { desc = icon .. "Yank Macro" })
+	-- stylua: ignore
 	keymap("n", config.mapping.deleteAllMacros, deleteAllMacros, { desc = icon .. "Delete All Macros" })
 
 	-- (experimental) if true, nvim-recorder and dap will use shared keymaps:
