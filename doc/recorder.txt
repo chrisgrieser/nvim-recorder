@@ -1,4 +1,4 @@
-*recorder.txt*          For NVIM v0.8.0         Last change: 2023 September 04
+*recorder.txt*          For NVIM v0.8.0          Last change: 2023 December 13
 
 ==============================================================================
 Table of Contents                                 *recorder-table-of-contents*
@@ -15,7 +15,7 @@ Table of Contents                                 *recorder-table-of-contents*
 
 
 
-Enhance the usage of macros in Neovim.
+Enhancethe usage of macros in Neovim.
 
 - |recorder-features|
 - |recorder-setup|
@@ -32,13 +32,21 @@ Enhance the usage of macros in Neovim.
 
 FEATURES                                    *recorder-nvim-recorder--features*
 
-- **Simplified controls**One key to start and stop recording, a second key for playing the macro. Instead of `qa … q @a @@`, you just do `q … q Q Q`.
-- **Macro Breakpoints** for easier debugging of macros. Breakpoints can also be set after the recording and are automatically ignored when triggering a macro with a count.
-- **Status line components**Particularly useful if you use `cmdheight=0` where the recording status is not visible.
+- **Simplified controls**One key to start and stop recording, a second key for
+    playing the macro. Instead of `qa … q @a @@`, you just do `q … q Q Q`.
+- **Macro Breakpoints** for easier debugging of macros. Breakpoints can also be
+    set after the recording and are automatically ignored when triggering a macro
+    with a count.
+- **Status line components**Particularly useful if you use `cmdheight=0` where
+    the recording status is not visible.
 - **Macro-to-Mapping**Copy a macro, so you can save it as a mapping.
-- **Various quality-of-life features**notifications with macro content, the ability to cancel a recording, a command to edit macros,
-- **Performance Optimizations for large macros**When the macro is triggered with a high count, temporarily enable some performance improvements.
-- Uses up-to-date nvim features like `vim.notify`. This means you can get confirmation notices with plugins like nvim-notify <https://github.com/rcarriga/nvim-notify>.
+- **Various quality-of-life features**notifications with macro content, the
+    ability to cancel a recording, a command to edit macros,
+- **Performance Optimizations for large macros**When the macro is triggered
+    with a high count, temporarily enable some performance improvements.
+- Uses up-to-date nvim features like `vim.notify`. This means you can get
+    confirmation notices with plugins like
+    nvim-notify <https://github.com/rcarriga/nvim-notify>.
 
 
 SETUP                                          *recorder-nvim-recorder--setup*
@@ -71,7 +79,7 @@ CONFIGURATION ~
     -- default values
     require("recorder").setup {
         -- Named registers where macros are saved (single lowercase letters only).
-        -- The first register is the default register used as macro-slot used after
+        -- The first register is the default register used as macro-slot after
         -- startup.
         slots = { "a", "b" },
     
@@ -80,15 +88,17 @@ CONFIGURATION ~
             playMacro = "Q",
             switchSlot = "<C-q>",
             editMacro = "cq",
+            deleteAllMacros = "dq",
             yankMacro = "yq",
-            addBreakPoint = "", --  this should be a string you don't use in insert mode during a macro
+            -- ⚠️ this should be a string you don't use in insert mode during a macro
+            addBreakPoint = "##",
         },
     
         -- Clears all macros-slots on startup.
         clear = false,
     
         -- Log level used for any notification, mostly relevant for nvim-notify.
-        -- (Note that by default, nvim-notify does not show the levels trace & debug.)
+        -- (Note that by default, nvim-notify does not show the levels `trace` & `debug`.)
         logLevel = vim.log.levels.INFO,
     
         -- If enabled, only critical notifications are sent.
@@ -105,7 +115,7 @@ CONFIGURATION ~
         performanceOpts = {
             countThreshold = 100,
             lazyredraw = true, -- enable lazyredraw (see `:h lazyredraw`)
-            noSystemClipboard = true, -- remove `+`/`` from clipboard option
+            noSystemClipboard = true, -- remove `+`/`*` from clipboard option
             autocmdEventsIgnore = { -- temporarily ignore these autocmd events
                 "TextChangedI",
                 "TextChanged",
@@ -133,10 +143,10 @@ STATUS LINE COMPONENTS ~
     require("recorder").recordingStatus()
     
     -- Displays non-empty macro-slots (registers) and indicates the selected ones.
-    -- Only displayed when not recording. Slots with breakpoints get an extra ``.
+    -- Only displayed when *not* recording. Slots with breakpoints get an extra `#`.
     require("recorder").displaySlots()
     
-    --  use with the config `clear = true` to see recordings you made this session.
+    -- 💡 use with the config `clear = true` to see recordings you made this session.
 <
 
 Example for adding the status line components to lualine
@@ -149,7 +159,7 @@ Example for adding the status line components to lualine
     lualine_z = {
         { require("recorder").recordingStatus },
     },
-    --  put the components in different status line segments so they have 
+    -- 💡 put the components in different status line segments so they have 
     -- a different color, making the recording status more distinguishable 
     -- from saved recordings
 <
@@ -157,11 +167,18 @@ Example for adding the status line components to lualine
 
 BASICUSAGE                                *recorder-nvim-recorder--basicusage*
 
-- `startStopRecording`Starts recording to the current macro slot (so you do not need to specify a register). Press again to end the recording.
-- `playMacro`Plays the macro in the current slot (without the need to specify a register).
-- `switchSlot`Cycles through the registers you specified in the configuration. Also show a notification with the slot and its content. (The currently selected slot can be seen in the |recorder-status-line-component|.)
-- `editMacro`Edit the macro recorded in the active slot. (Be aware that these are the keystrokes in "encoded" form.)
-- `yankMacro`Copies the current macro in decoded form that can be used to create a mapping from it. Breakpoints are removed from the macro.
+- `startStopRecording`Starts recording to the current macro slot (so you do
+    not need to specify a register). Press again to end the recording.
+- `playMacro`Plays the macro in the current slot (without the need to specify
+    a register).
+- `switchSlot`Cycles through the registers you specified in the configuration.
+    Also show a notification with the slot and its content. (The currently
+    selected slot can be seen in the |recorder-status-line-component|.)
+- `editMacro`Edit the macro recorded in the active slot. (Be aware that these
+    are the keystrokes in "encoded" form.)
+- `yankMacro`Copies the current macro in decoded form that can be used to
+    create a mapping from it. Breakpoints are removed from the copied macro.
+- `deleteAllMacros`Copies the current macro in decoded form that can be used to
 
 
   For recursive macros (playing a macro inside a macro), you can still use the
@@ -180,10 +197,10 @@ run.
 Note that these optimizations do have some potential drawbacks. -
 |`lazyredraw`| disables redrawing of the screen, which makes it harder to
 notice edge cases not considered in the macro. It may also appear as if the
-screen if frozen for a while. - Disabling the system clipboard is mostly safe,
-if you do not intend to copy content to it with the macro. - Ignoring certain
-autocmds is not recommended, when you rely on certain plugin functionality
-during the macro, since it can potentially disrupt those plugin’s effect.
+screen is frozen for a while. - Disabling the system clipboard is mostly safe,
+if you do not intend to copy content to it with the macro. - Ignoring
+auto-commands is not recommended, when you rely on certain plugin functionality
+during the macro, since it can potentially disrupt those plugins’ effect.
 
 
 MACRO BREAKPOINTS ~
@@ -193,8 +210,8 @@ helpful for debugging macros. Breakpoints are automatically ignored when you
 trigger the macro with a count.
 
 **Setting Breakpoints** 1. _During a recording,_ press the `addBreakPoint` key
-(default: )in normal mode. 2. _After a recording,_ use `editMacro` and add or
-remove the manually.
+(default: `##`) in normal mode. 2. _After a recording,_ use `editMacro` and add
+or remove the `##` manually.
 
 **Playing Macros with Breakpoints** - Using the `playMacro` key, the macro
 automatically stops at the next breakpoint. The next time you press
@@ -216,7 +233,7 @@ the sequence, meaning that `playMacro` starts from the beginning again.
 true` to set up the following shared keybindings: 1. `addBreakPoint` maps to
 `dap.toggle_breakpoint()` outside a recording. During a recording, it adds a
 macro breakpoint instead. 2. `playMacro` maps to `dap.continue()` if there is
-at least one dap-breakpoint. If there is no dap-breakpoint, plays the current
+at least one DAP-breakpoint. If there is no DAP-breakpoint, plays the current
 macro-slot instead.
 
 Note that this feature is experimental, since the respective API from nvim-dap
@@ -226,11 +243,11 @@ is non-public and can be changed without deprecation notice
 
 LAZY-LOADING THE PLUGIN ~
 
-The plugin can be lazy-loaded, but the setup is a bit more complex than with
-other plugins.
+`nvim-recorder` can be lazy-loaded, but the setup is a bit more complex than
+with other plugins.
 
-`nvim-recorder` is best lazy-loaded on the keymappings for `startStopRecording`
-and `playMacro`. However, it is still required to set the keymappings to the
+`nvim-recorder` is best lazy-loaded on the mappings for `startStopRecording`
+and `playMacro`. However, it is still required to set the mappings to the
 `setup` call.
 
 However, since using the status line components also results in loading the
@@ -249,8 +266,8 @@ lazy-loading it should not have a big impact.
         dependencies = "rcarriga/nvim-notify",
         keys = {
             -- these must match the keys in the mapping config below
-            { "q", desc = " Start Recording" },
-            { "Q", desc = " Play Recording" },
+            { "q", desc = " Start Recording" },
+            { "Q", desc = " Play Recording" },
         },
         config = function()
             require("recorder").setup({
@@ -293,6 +310,8 @@ Academic Website <https://chris-grieser.de/> - GitHub
 - Mastodon <https://pkm.social/@pseudometa> - ResearchGate
 <https://www.researchgate.net/profile/Christopher-Grieser> - LinkedIn
 <https://www.linkedin.com/in/christopher-grieser-ba693b17a/>
+
+
 
 Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
 
