@@ -64,6 +64,7 @@ require("recorder").setup {
 		playMacro = "Q",
 		switchSlot = "<C-q>",
 		editMacro = "cq",
+		deleteAllMacros = "dq",
 		yankMacro = "yq",
 		addBreakPoint = "##", -- ⚠️ this should be a string you don't use in insert mode during a macro
 	},

@@ -208,6 +208,14 @@ local function editMacro()
 	end)
 end
 
+local function deleteAllMacros()
+	breakCounter = 0 -- reset breakpoint counter
+	for _, reg in pairs(macroRegs) do
+		setMacro(reg, "")
+	end
+	nonEssentialNotify("All macros deleted.")
+end
+
 local function yankMacro()
 	breakCounter = 0
 	local reg = macroRegs[slotIndex]
@@ -264,6 +272,7 @@ end
 ---@field playMacro string
 ---@field editMacro string
 ---@field yankMacro string
+---@field deleteAllMacros string
 ---@field switchSlot string
 ---@field addBreakPoint string
 
@@ -280,6 +289,7 @@ function M.setup(userConfig)
 			playMacro = "Q",
 			switchSlot = "<C-q>",
 			editMacro = "cq",
+			deleteAllMacros = "dq",
 			yankMacro = "yq",
 			addBreakPoint = "##",
 		},
@@ -316,11 +326,7 @@ function M.setup(userConfig)
 	end
 
 	-- clear macro slots
-	if config.clear then
-		for _, reg in pairs(macroRegs) do
-			setMacro(reg, "")
-		end
-	end
+	if config.clear then deleteAllMacros() end
 
 	-- setup keymaps
 	toggleKey = config.mapping.startStopRecording
@@ -332,6 +338,7 @@ function M.setup(userConfig)
 	keymap("n", config.mapping.switchSlot, switchMacroSlot, { desc = icon .. "Switch Macro Slot" })
 	keymap("n", config.mapping.editMacro, editMacro, { desc = icon .. "Edit Macro" })
 	keymap("n", config.mapping.yankMacro, yankMacro, { desc = icon .. "Yank Macro" })
+	keymap("n", config.mapping.deleteAllMacros, deleteAllMacros, { desc = icon .. "Delete All Macros" })
 
 	-- (experimental) if true, nvim-recorder and dap will use shared keymaps:
 	-- 1) `addBreakPoint` will map to `dap.toggle_breakpoint()` outside
