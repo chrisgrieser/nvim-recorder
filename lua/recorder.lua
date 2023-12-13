@@ -308,7 +308,7 @@ function M.setup(userConfig)
 	}
 	local config = vim.tbl_deep_extend("keep", userConfig, defaultConfig)
 
-	-- settings to be used in globally
+	-- settings to be used globally
 	perf = config.performanceOpts
 	useNerdfontIcons = config.useNerdfontIcons
 	lessNotifications = config.lessNotifications
@@ -318,7 +318,7 @@ function M.setup(userConfig)
 	for _, reg in pairs(macroRegs) do
 		if not (reg:find("^%l$")) then
 			notify(
-				"'" .. reg .. "' is an invalid slot. Choose only named registers (a-z).",
+				("'%s' is an invalid slot. Choose only named registers (a-z)."):format(reg),
 				"error"
 			)
 			return
@@ -347,11 +347,11 @@ function M.setup(userConfig)
 	-- dap-breakpoint. If there is no dap breakpoint, will play the current
 	-- macro-slot instead
 	dapSharedKeymaps = config.dapSharedKeymaps or false
-	local desc1 = dapSharedKeymaps and dapSharedIcon .. "Breakpoint"
+	local breakPointDesc = dapSharedKeymaps and dapSharedIcon .. "Breakpoint"
 		or icon .. "Insert Macro Breakpoint."
-	keymap("n", breakPointKey, addBreakPoint, { desc = desc1 })
-	local desc2 = dapSharedKeymaps and dapSharedIcon .. "Continue/Play" or icon .. "Play Macro"
-	keymap("n", config.mapping.playMacro, playRecording, { desc = desc2 })
+	keymap("n", breakPointKey, addBreakPoint, { desc = breakPointDesc })
+	local playDesc = dapSharedKeymaps and dapSharedIcon .. "Continue/Play" or icon .. "Play Macro"
+	keymap("n", config.mapping.playMacro, playRecording, { desc = playDesc })
 end
 
 --------------------------------------------------------------------------------
