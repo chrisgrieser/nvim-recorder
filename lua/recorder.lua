@@ -208,12 +208,13 @@ local function editMacro()
 	end)
 end
 
-local function deleteAllMacros()
+---@param mode string
+local function deleteAllMacros(mode)
 	breakCounter = 0 -- reset breakpoint counter
 	for _, reg in pairs(macroRegs) do
 		setMacro(reg, "")
 	end
-	nonEssentialNotify("All macros deleted.")
+	if mode ~= "no-notification" then nonEssentialNotify("All macros deleted.") end
 end
 
 local function yankMacro()
@@ -326,7 +327,7 @@ function M.setup(userConfig)
 	end
 
 	-- clear macro slots
-	if config.clear then deleteAllMacros() end
+	if config.clear then deleteAllMacros("no-notification") end
 
 	-- setup keymaps
 	toggleKey = config.mapping.startStopRecording
