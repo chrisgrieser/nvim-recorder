@@ -1,7 +1,8 @@
 <!-- LTeX: enabled=false -->
 # nvim-recorder 📹
 <!-- LTeX: enabled=true -->
-<a href="https://dotfyle.com/plugins/chrisgrieser/nvim-recorder"><img src="https://dotfyle.com/plugins/chrisgrieser/nvim-recorder/shield" /></a>
+<a href="https://dotfyle.com/plugins/chrisgrieser/nvim-recorder">
+<img alt="badge" src="https://dotfyle.com/plugins/chrisgrieser/nvim-recorder/shield"/></a>
 
 Enhance the usage of macros in Neovim.
 
@@ -131,9 +132,10 @@ require("recorder").recordingStatus()
 -- Displays non-empty macro-slots (registers) and indicates the selected ones.
 -- Only displayed when *not* recording. Slots with breakpoints get an extra `#`.
 require("recorder").displaySlots()
-
--- 💡 use with the config `clear = true` to see recordings you made this session.
 ```
+
+> [!TIP]
+> Use with the config `clear = true` to see recordings you made this session.
 
 Example for adding the status line components to [lualine](https://github.com/nvim-lualine/lualine.nvim):
 
@@ -144,10 +146,12 @@ lualine_y = {
 lualine_z = {
 	{ require("recorder").recordingStatus },
 },
--- 💡 put the components in different status line segments so they have 
--- a different color, making the recording status more distinguishable 
--- from saved recordings
 ```
+
+> [!TIP]
+> Put the components in different status line segments, so they have
+> a different color, making the recording status more distinguishable
+> from saved recordings
 
 ## Basic Usage
 
@@ -165,7 +169,8 @@ lualine_z = {
   create a mapping from it. Breakpoints are removed from the copied macro.
 - `deleteAllMacros`: Copies the current macro in decoded form that can be used to
 
-> 💡 For recursive macros (playing a macro inside a macro), you can still use
+> [!TIP]
+> For recursive macros (playing a macro inside a macro), you can still use
 > the default command `@a`.
 
 ## Advanced Usage
@@ -188,32 +193,47 @@ Note that these optimizations do have some potential drawbacks.
   plugins' effect.
 
 ### Macro Breakpoints
-`nvim-recorder` allows you to set breakpoints in your macros, which can be helpful for debugging macros. Breakpoints are automatically ignored when you trigger the macro with a count.
+`nvim-recorder` allows you to set breakpoints in your macros, which can be
+helpful for debugging macros. Breakpoints are automatically ignored when you
+trigger the macro with a count.
 
 __Setting Breakpoints__  
-1. *During a recording,* press the `addBreakPoint` key (default: `##`) in normal mode.
+1. *During a recording,* press the `addBreakPoint` key (default: `##`) in normal
+   mode.
 2. *After a recording,* use `editMacro` and add or remove the `##` manually.
 
 __Playing Macros with Breakpoints__  
-- Using the `playMacro` key, the macro automatically stops at the next breakpoint. The next time you press `playMacro`, the next segment of the macro is played.
-- Starting a new recording, editing a macro, yanking a macro, or switching macro slot all reset the sequence, meaning that `playMacro` starts from the beginning again.
+- Using the `playMacro` key, the macro automatically stops at the next
+  breakpoint. The next time you press `playMacro`, the next segment of the macro
+  is played.
+- Starting a new recording, editing a macro, yanking a macro, or switching macro
+  slot all reset the sequence, meaning that `playMacro` starts from the
+  beginning again.
 
-> 💡 You can do other things in between playing segments of the macro, like moving a few characters to the left or right. That way you can also use breakpoints to manually correct irregularities.
+> [!TIP]
+> You can do other things in between playing segments of the macro, like
+> moving a few characters to the left or right. That way you can also use
+> breakpoints to manually correct irregularities.
 
 __Ignoring Breakpoints__  
-When you play the macro with a *count* (for example `50Q`), breakpoints are automatically ignored.
+When you play the macro with a *count* (for example `50Q`), breakpoints are
+automatically ignored.
 
-> 💡 Add a count of 1 (`1Q`) to play a macro once and still ignore breakpoints.
+> [!TIP]
+> Add a count of 1 (`1Q`) to play a macro once and still ignore breakpoints.
 
 __Shared Keybindings with `nvim-dap`__  
-If you are using [nvim-dap](https://github.com/mfussenegger/nvim-dap), you can use `dapSharedKeymaps = true` to set up the following shared keybindings:
+If you are using [nvim-dap](https://github.com/mfussenegger/nvim-dap), you can
+use `dapSharedKeymaps = true` to set up the following shared keybindings:
 1. `addBreakPoint` maps to `dap.toggle_breakpoint()` outside
 a recording. During a recording, it adds a macro breakpoint instead.
 2. `playMacro` maps to `dap.continue()` if there is at least one
 DAP-breakpoint. If there is no DAP-breakpoint, plays the current
 macro-slot instead.
 
-Note that this feature is experimental, since the [respective API from nvim-dap is non-public and can be changed without deprecation notice](https://github.com/mfussenegger/nvim-dap/discussions/810#discussioncomment-4623606).
+Note that this feature is experimental, since the [respective API from nvim-dap
+is non-public and can be changed without deprecation
+notice](https://github.com/mfussenegger/nvim-dap/discussions/810#discussioncomment-4623606).
 
 ### Lazy-loading the plugin
 `nvim-recorder` can be lazy-loaded, but the setup is a bit more complex than
@@ -267,7 +287,10 @@ lazy-loading it should not have a big impact.
 
 <!-- vale Google.FirstPerson = NO -->
 ## About me
-In my day job, I am a sociologist studying the social mechanisms underlying the digital economy. For my PhD project, I investigate the governance of the app economy and how software ecosystems manage the tension between innovation and compatibility. If you are interested in this subject, feel free to get in touch.
+In my day job, I am a sociologist studying the social mechanisms underlying the
+digital economy. For my PhD project, I investigate the governance of the app
+economy and how software ecosystems manage the tension between innovation and
+compatibility. If you are interested in this subject, feel free to get in touch.
 
 __Blog__  
 I also occasionally blog about vim: [Nano Tips for Vim](https://nanotipsforvim.prose.sh)
