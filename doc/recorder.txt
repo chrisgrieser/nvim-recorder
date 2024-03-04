@@ -1,4 +1,4 @@
-*recorder.txt*           For NVIM v0.8.0          Last change: 2024 January 12
+*recorder.txt*            For NVIM v0.8.0           Last change: 2024 March 04
 
 ==============================================================================
 Table of Contents                                 *recorder-table-of-contents*
