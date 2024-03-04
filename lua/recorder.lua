@@ -112,13 +112,18 @@ local function playRecording()
 
 	-- EXECUTE MACRO
 	local countGiven = v.count ~= 0
-	local hasBreakPoints = macro:find(vim.pesc(breakPointKey))
+	local hasBreakPoints = fn.keytrans(macro):find(vim.pesc(breakPointKey))
 	local usePerfOptimizations = v.count1 >= perf.countThreshold
 
 	-- macro (w/ breakpoints)
 	if hasBreakPoints and not countGiven then
 		breakCounter = breakCounter + 1
-		local macroParts = vim.split(macro, breakPointKey, {})
+
+		local macroParts = {}
+		for _, macroPart in ipairs(vim.split(fn.keytrans(macro), vim.pesc(breakPointKey), {})) do
+			table.insert(macroParts, vim.api.nvim_replace_termcodes(macroPart, true, true, true))
+		end
+
 		local partialMacro = macroParts[breakCounter]
 
 		setMacro(reg, partialMacro)
@@ -330,7 +335,7 @@ function M.setup(userConfig)
 
 	-- setup keymaps
 	toggleKey = config.mapping.startStopRecording
-	breakPointKey = config.mapping.addBreakPoint
+	breakPointKey = fn.keytrans(vim.api.nvim_replace_termcodes(config.mapping.addBreakPoint, true, true, true)) -- "normalize" the breakpoint mapping
 	local icon = config.useNerdfontIcons and " " or ""
 	local dapSharedIcon = config.useNerdfontIcons and " /  " or ""
 
