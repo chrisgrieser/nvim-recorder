@@ -74,12 +74,16 @@ require("recorder").setup {
 	mapping = {
 		startStopRecording = "q",
 		playMacro = "Q",
+		-- ⚠️ this should be a mapping you don't normally use in insert mode
+		insertPlayMacro = "<C-q>",
 		switchSlot = "<C-q>",
 		editMacro = "cq",
 		deleteAllMacros = "dq",
 		yankMacro = "yq",
 		-- ⚠️ this should be a string you don't use in insert mode during a macro
 		addBreakPoint = "##",
+		-- ⚠️ this should be a string you don't use in normal mode during a macro
+		insertAddBreakPoint = "<C-e>",
 	},
 
 	-- Clears all macros-slots on startup.
@@ -158,7 +162,9 @@ lualine_z = {
 - `startStopRecording`: Starts recording to the current macro slot (so you do
   not need to specify a register). Press again to end the recording.
 - `playMacro`: Plays the macro in the current slot (without the need to specify
-  a register).
+  a register), continuing the current macro if at a breakpoint.
+- `insertPlayMacro`: Insert-mode version of `playMacro` (useful when a breakpoint
+  is hit in insert mode).
 - `switchSlot`: Cycles through the registers you specified in the configuration.
   Also show a notification with the slot and its content. (The currently
   selected slot can be seen in the [status line
@@ -198,14 +204,14 @@ helpful for debugging macros. Breakpoints are automatically ignored when you
 trigger the macro with a count.
 
 __Setting Breakpoints__  
-1. *During a recording,* press the `addBreakPoint` key (default: `##`) in normal
-   mode.
+1. *During a recording,* press the `addBreakPoint` key (default: `##`) in normal mode,
+    and the `insertAddBreakPoint` key (default: `<C-e>`) in insert mode.
 2. *After a recording,* use `editMacro` and add or remove the `##` manually.
 
 __Playing Macros with Breakpoints__  
-- Using the `playMacro` key, the macro automatically stops at the next
-  breakpoint. The next time you press `playMacro`, the next segment of the macro
-  is played.
+- Using the `playMacro`/`insertPlayMacro` key, the macro automatically stops at
+  the next breakpoint. The next time you press `playMacro`/`insertPlayMacro`, the
+  next segment of the macro is played.
 - Starting a new recording, editing a macro, yanking a macro, or switching macro
   slot all reset the sequence, meaning that `playMacro` starts from the
   beginning again.
