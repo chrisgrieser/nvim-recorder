@@ -3,6 +3,15 @@ description: Suggest an idea
 title: "Feature Request: "
 labels: ["enhancement"]
 body:
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: "I have read the plugin's documentation."
+          required: true
+        - label: The feature would be useful to more users than just me.
+          required: true
   - type: textarea
     id: feature-requested
     attributes:
@@ -15,10 +24,3 @@ body:
     attributes:
       label: Relevant Screenshot
       description: If applicable, add screenshots or a screen recording to help explain the request.
-  - type: checkboxes
-    id: checklist
-    attributes:
-      label: Checklist
-      options:
-        - label: The feature would be useful to more users than just me.
-          required: true
