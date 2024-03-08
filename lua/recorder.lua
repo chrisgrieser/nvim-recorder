@@ -145,7 +145,10 @@ local function playRecording()
 			msg = msg
 				.. "\nnvim might appear to freeze due to lazy redrawing. \nThis is to be expected and not a bug."
 		end
-		nonEssentialNotify(msg)
+		vim.notify(msg, logLevel, {
+			title = "nvim-recorder",
+			animate = false, -- as macro will be blocking
+		})
 
 		local original = {}
 		if perf.lazyredraw then
@@ -161,8 +164,6 @@ local function playRecording()
 		opt.eventignore = perf.autocmdEventsIgnore
 
 		-- if notification is shown, defer to ensure it is displayed
-		-- (e.g., nvim-notify animations delay the display a bit)
-		local delay = lessNotifications and 0 or 1500
 		local count = v.count1 -- counts needs to be saved due to scoping by defer_fn
 		vim.defer_fn(function()
 			normal(count .. "@" .. reg)
@@ -171,7 +172,7 @@ local function playRecording()
 			if perf.lazyredraw then vim.opt.lazyredraw = original.lazyredraw end
 			if perf.noSystemclipboard then opt.clipboard = original.clipboard end
 			opt.eventignore = original.eventignore
-		end, delay)
+		end, 500)
 
 	-- macro (regular)
 	else
@@ -335,7 +336,8 @@ function M.setup(userConfig)
 
 	-- setup keymaps
 	toggleKey = config.mapping.startStopRecording
-	breakPointKey = fn.keytrans(vim.api.nvim_replace_termcodes(config.mapping.addBreakPoint, true, true, true)) -- "normalize" the breakpoint mapping
+	breakPointKey =
+		fn.keytrans(vim.api.nvim_replace_termcodes(config.mapping.addBreakPoint, true, true, true)) -- "normalize" the breakpoint mapping
 	local icon = config.useNerdfontIcons and " " or ""
 	local dapSharedIcon = config.useNerdfontIcons and " /  " or ""
 
