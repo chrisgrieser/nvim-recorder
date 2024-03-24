@@ -3,12 +3,26 @@ local M = {}
 local fn = vim.fn
 local v = vim.v
 local opt = vim.opt
-local getMacro = vim.fn.getreg
-local setMacro = vim.fn.setreg
 local keymap = vim.keymap.set
 
 -- internal vars
 local macroRegs, slotIndex, logLevel, breakCounter
+
+-- Use this function to normalize keycodes (which can have multiple
+-- representations, e.g. <C-f> or <C-F>).
+---@param mapping string
+local normalizeKeycodes = function (mapping)
+	return fn.keytrans(vim.api.nvim_replace_termcodes(mapping, true, true, true))
+end
+
+local getMacro = function(reg)
+	-- Some keys (e.g. <C-F>) have different representations when they are recorded
+	-- versus when they are a result of vim.api.nvim_replace_termcodes (for example).
+	-- This ensures that whenever we are manually doing something with register contents,
+	-- they are always consistent.
+	return vim.api.nvim_replace_termcodes(fn.keytrans(vim.fn.getreg(reg)), true, true, true)
+end
+local setMacro = vim.fn.setreg
 
 -- vars which can be set by the user
 local toggleKey, breakPointKey, dapSharedKeymaps, lessNotifications, useNerdfontIcons
@@ -336,8 +350,7 @@ function M.setup(userConfig)
 
 	-- setup keymaps
 	toggleKey = config.mapping.startStopRecording
-	breakPointKey =
-		fn.keytrans(vim.api.nvim_replace_termcodes(config.mapping.addBreakPoint, true, true, true)) -- "normalize" the breakpoint mapping
+	breakPointKey = normalizeKeycodes(config.mapping.addBreakPoint)
 	local icon = config.useNerdfontIcons and " " or ""
 	local dapSharedIcon = config.useNerdfontIcons and " /  " or ""
 
