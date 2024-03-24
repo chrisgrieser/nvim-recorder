@@ -11,7 +11,7 @@ local macroRegs, slotIndex, logLevel, breakCounter
 -- Use this function to normalize keycodes (which can have multiple
 -- representations, e.g. <C-f> or <C-F>).
 ---@param mapping string
-local normalizeKeycodes = function (mapping)
+local normalizeKeycodes = function(mapping)
 	return fn.keytrans(vim.api.nvim_replace_termcodes(mapping, true, true, true))
 end
 
@@ -22,7 +22,7 @@ local getMacro = function(reg)
 	-- they are always consistent.
 	return vim.api.nvim_replace_termcodes(fn.keytrans(vim.fn.getreg(reg)), true, true, true)
 end
-local setMacro = vim.fn.setreg
+local setMacro = function(reg, recording) vim.fn.setreg(reg, recording, "c") end
 
 -- vars which can be set by the user
 local toggleKey, breakPointKey, dapSharedKeymaps, lessNotifications, useNerdfontIcons
