@@ -85,11 +85,11 @@ require("recorder").setup {
 	-- Clears all macros-slots on startup.
 	clear = false,
 
-	-- Log level used for any notification, mostly relevant for nvim-notify.
+	-- Log level used for non-critical notifications; mostly relevant for nvim-notify.
 	-- (Note that by default, nvim-notify does not show the levels `trace` & `debug`.)
-	logLevel = vim.log.levels.INFO,
+	logLevel = vim.log.levels.INFO, -- :help vim.log.levels
 
-	-- If enabled, only critical notifications are sent.
+	-- If enabled, only essential notifications are sent.
 	-- If you do not use a plugin like nvim-notify, set this to `true`
 	-- to remove otherwise annoying messages.
 	lessNotifications = false,
