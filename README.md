@@ -236,20 +236,16 @@ is non-public and can be changed without deprecation
 notice](https://github.com/mfussenegger/nvim-dap/discussions/810#discussioncomment-4623606).
 
 ### Lazy-loading the plugin
-`nvim-recorder` can be lazy-loaded, but the setup is a bit more complex than
-with other plugins.
-
 `nvim-recorder` is best lazy-loaded on the mappings for `startStopRecording` and
-`playMacro`. However, it is still required to set the mappings to the `setup`
-call.
+`playMacro`. However, adding the statusline components to `lualine` will cause the
+plugin to load before you start or play a recording.
 
-However, since using the status line components also results in loading the
-plugin. The loading of the status line components can be delayed by setting them
-in the plugin's `config`. The only drawback of this method is that no component
-is shown when until you start or play a recording (which you can completely
-disregard when you set `clear = true`, though).
+To avoid this, the statusline components need to be loaded only in the plugin's
+`config`. The drawback of this method is that no component is shown when until
+you start or play a recording (which you can completely disregard when you set
+`clear = true`, though).
 
-Nonetheless, the plugin is pretty lightweight (~350 lines of code), so not
+Nonetheless, the plugin is pretty lightweight (~400 lines of code), so not
 lazy-loading it should not have a big impact.
 
 ```lua

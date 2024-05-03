@@ -22,6 +22,7 @@ local getMacro = function(reg)
 	-- they are always consistent.
 	return vim.api.nvim_replace_termcodes(fn.keytrans(vim.fn.getreg(reg)), true, true, true)
 end
+---@diagnostic disable-next-line: param-type-mismatch -- false annotations
 local setMacro = function(reg, recording) vim.fn.setreg(reg, recording, "c") end
 
 -- vars which can be set by the user
@@ -48,10 +49,12 @@ end
 
 ---@return boolean
 local function isRecording() return fn.reg_recording() ~= "" end
+
+---@return boolean
 local function isPlaying() return fn.reg_executing() ~= "" end
 
 ---runs `:normal` natively with bang
----@param cmdStr any
+---@param cmdStr string
 local function normal(cmdStr) vim.cmd.normal { cmdStr, bang = true } end
 
 --------------------------------------------------------------------------------
