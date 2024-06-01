@@ -1,6 +1,5 @@
 name: panvimdoc
 
-# yamllint disable rule:truthy
 on: [push]
 
 jobs:
@@ -8,11 +7,11 @@ jobs:
     runs-on: ubuntu-latest
     name: pandoc to vimdoc
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: panvimdoc
         uses: kdheepak/panvimdoc@main
         with:
-          vimdoc: {{plugin-name-short}}
+          vimdoc: recorder
           toc: true
           demojify: true
           treesitter: true
