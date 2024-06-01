@@ -1,21 +1,26 @@
-name: panvimdoc
+name: Auto-generate vimdocs
 
-on: [push]
+on:
+  push:
+    branches: [main]
+    paths: [README.md]
+
+permissions:
+  contents: write
 
 jobs:
   docs:
     runs-on: ubuntu-latest
-    name: pandoc to vimdoc
+    name: README.md to vimdoc
     steps:
       - uses: actions/checkout@v4
-      - name: panvimdoc
-        uses: kdheepak/panvimdoc@main
+      - uses: kdheepak/panvimdoc@main
         with:
           vimdoc: recorder
           toc: true
-          demojify: true
           treesitter: true
+          demojify: true
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "chore: Auto generate docs"
+          commit_message: "chore: Auto-generate vimdocs"
           branch: ${{ github.head_ref }}
