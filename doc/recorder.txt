@@ -1,4 +1,4 @@
-*recorder.txt*            For NVIM v0.8.0           Last change: 2024 March 04
+*recorder.txt*            For NVIM v0.8.0            Last change: 2024 June 01
 
 ==============================================================================
 Table of Contents                                 *recorder-table-of-contents*
@@ -97,11 +97,11 @@ CONFIGURATION ~
         -- Clears all macros-slots on startup.
         clear = false,
     
-        -- Log level used for any notification, mostly relevant for nvim-notify.
+        -- Log level used for non-critical notifications; mostly relevant for nvim-notify.
         -- (Note that by default, nvim-notify does not show the levels `trace` & `debug`.)
-        logLevel = vim.log.levels.INFO,
+        logLevel = vim.log.levels.INFO, -- :help vim.log.levels
     
-        -- If enabled, only critical notifications are sent.
+        -- If enabled, only essential notifications are sent.
         -- If you do not use a plugin like nvim-notify, set this to `true`
         -- to remove otherwise annoying messages.
         lessNotifications = false,
@@ -246,20 +246,16 @@ is non-public and can be changed without deprecation notice
 
 LAZY-LOADING THE PLUGIN ~
 
-`nvim-recorder` can be lazy-loaded, but the setup is a bit more complex than
-with other plugins.
-
 `nvim-recorder` is best lazy-loaded on the mappings for `startStopRecording`
-and `playMacro`. However, it is still required to set the mappings to the
-`setup` call.
+and `playMacro`. However, adding the statusline components to `lualine` will
+cause the plugin to load before you start or play a recording.
 
-However, since using the status line components also results in loading the
-plugin. The loading of the status line components can be delayed by setting
-them in the plugin’s `config`. The only drawback of this method is that no
-component is shown when until you start or play a recording (which you can
-completely disregard when you set `clear = true`, though).
+To avoid this, the statusline components need to be loaded only in the
+plugin’s `config`. The drawback of this method is that no component is shown
+when until you start or play a recording (which you can completely disregard
+when you set `clear = true`, though).
 
-Nonetheless, the plugin is pretty lightweight (~350 lines of code), so not
+Nonetheless, the plugin is pretty lightweight (~400 lines of code), so not
 lazy-loading it should not have a big impact.
 
 >lua
