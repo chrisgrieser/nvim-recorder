@@ -22,7 +22,6 @@ local getMacro = function(reg)
 	-- they are always consistent.
 	return vim.api.nvim_replace_termcodes(fn.keytrans(vim.fn.getreg(reg)), true, true, true)
 end
----@diagnostic disable-next-line: param-type-mismatch -- false annotations
 local setMacro = function(reg, recording) vim.fn.setreg(reg, recording, "c") end
 
 -- vars which can be set by the user
@@ -162,12 +161,11 @@ local function playRecording()
 
 		local original = {}
 		if perf.lazyredraw then
-			---@diagnostic disable-next-line: param-type-mismatch neodev buggy here?
-			original.lazyredraw = opt.lazyredraw:get()
+			original.lazyredraw = opt.lazyredraw:get() ---@diagnostic disable-line: undefined-field
 			opt.lazyredraw = true
 		end
 		if perf.noSystemclipboard then
-			original.clipboard = opt.clipboard:get()
+			original.clipboard = opt.clipboard:get() ---@diagnostic disable-line: undefined-field
 			opt.clipboard = ""
 		end
 		original.eventignore = opt.eventignore:get()
@@ -178,7 +176,6 @@ local function playRecording()
 		vim.defer_fn(function()
 			normal(count .. "@" .. reg)
 
-			---@diagnostic disable-next-line: assign-type-mismatch neodev buggy here?
 			if perf.lazyredraw then vim.opt.lazyredraw = original.lazyredraw end
 			if perf.noSystemclipboard then opt.clipboard = original.clipboard end
 			opt.eventignore = original.eventignore
@@ -247,7 +244,7 @@ local function yankMacro()
 	-- remove breakpoints when yanking the macro
 	macroContent = macroContent:gsub(vim.pesc(breakPointKey), "")
 
-	local clipboardOpt = opt.clipboard:get()
+	local clipboardOpt = opt.clipboard:get() ---@diagnostic disable-line: undefined-field
 	local useSystemClipb = #clipboardOpt > 0 and clipboardOpt[1]:find("unnamed")
 	local copyToReg = useSystemClipb and "+" or '"'
 
