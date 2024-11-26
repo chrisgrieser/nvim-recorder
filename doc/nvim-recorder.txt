@@ -1,6 +1,16 @@
 *nvim-recorder.txt*          For Neovim          Last change: 2024 November 26
 
 ==============================================================================
+Table of Contents                            *nvim-recorder-table-of-contents*
+
+1. nvim-recorder                                |nvim-recorder-nvim-recorder-|
+  - Features                           |nvim-recorder-nvim-recorder--features|
+  - Setup                                 |nvim-recorder-nvim-recorder--setup|
+  - Basic Usage                     |nvim-recorder-nvim-recorder--basic-usage|
+  - Advanced Usage               |nvim-recorder-nvim-recorder--advanced-usage|
+  - About me                           |nvim-recorder-nvim-recorder--about-me|
+
+==============================================================================
 1. nvim-recorder                                *nvim-recorder-nvim-recorder-*
 
 
