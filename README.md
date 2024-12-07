@@ -18,7 +18,7 @@ Enhance the usage of macros in Neovim.
 	* [Performance Optimizations](#performance-optimizations)
 	* [Macro Breakpoints](#macro-breakpoints)
 	* [Lazy-loading the plugin](#lazy-loading-the-plugin)
-- [About me](#about-me)
+- [About the developer](#about-the-developer)
 
 <!-- tocstop -->
 
@@ -154,7 +154,6 @@ lualine_z = {
 > from saved recordings
 
 ## Basic Usage
-
 - `startStopRecording`: Starts recording to the current macro slot (so you do
   not need to specify a register). Press again to end the recording.
 - `playMacro`: Plays the macro in the current slot (without the need to specify
@@ -176,10 +175,9 @@ lualine_z = {
 ## Advanced Usage
 
 ### Performance Optimizations
-Running long macros or macros with a high count, can be demanding on the system
-and result in lags. For this reason, `nvim-recorder` provides some performance
-optimizations that are temporarily enabled when a macro with a high count is
-run.
+Running macros with a high count can be demanding on the system and result in lags. 
+For this reason, `nvim-recorder` provides some performance optimizations that are 
+temporarily enabled when a macro with a high count is run.
 
 Note that these optimizations do have some potential drawbacks.
 - [`lazyredraw`](https://neovim.io/doc/user/options.html#'lazyredraw') disables
@@ -193,14 +191,14 @@ Note that these optimizations do have some potential drawbacks.
   plugins' effect.
 
 ### Macro Breakpoints
-`nvim-recorder` allows you to set breakpoints in your macros, which can be
+`nvim-recorder` allows you to set breakpoints in your macros which can be
 helpful for debugging macros. Breakpoints are automatically ignored when you
 trigger the macro with a count.
 
 __Setting Breakpoints__  
-1. *During a recording,* press the `addBreakPoint` key (default: `##`) in normal
-   mode.
-2. *After a recording,* use `editMacro` and add or remove the `##` manually.
+- *During a recording:* press the `addBreakPoint` key (default: `##`) in normal
+   mode
+- *After a recording:* use `editMacro` and add or remove the `##` manually.
 
 __Playing Macros with Breakpoints__  
 - Using the `playMacro` key, the macro automatically stops at the next
@@ -281,8 +279,7 @@ lazy-loading it should not have a big impact.
 },
 ```
 
-<!-- vale Google.FirstPerson = NO -->
-## About me
+## About the developer
 In my day job, I am a sociologist studying the social mechanisms underlying the
 digital economy. For my PhD project, I investigate the governance of the app
 economy and how software ecosystems manage the tension between innovation and
@@ -292,10 +289,7 @@ __Blog__
 I also occasionally blog about vim: [Nano Tips for Vim](https://nanotipsforvim.prose.sh)
 
 __Profiles__
-- [Discord](https://discordapp.com/users/462774483044794368/)
-- [Academic Website](https://chris-grieser.de/)
-- [GitHub](https://github.com/chrisgrieser/)
-- [Twitter](https://twitter.com/pseudo_meta)
+- [Website](https://chris-grieser.de/)
 - [Mastodon](https://pkm.social/@pseudometa)
 - [ResearchGate](https://www.researchgate.net/profile/Christopher-Grieser)
 - [LinkedIn](https://www.linkedin.com/in/christopher-grieser-ba693b17a/)
