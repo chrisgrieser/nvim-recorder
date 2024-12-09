@@ -1,4 +1,4 @@
-*nvim-recorder.txt*          For Neovim          Last change: 2024 November 26
+*nvim-recorder.txt*          For Neovim          Last change: 2024 December 09
 
 ==============================================================================
 Table of Contents                            *nvim-recorder-table-of-contents*
@@ -8,7 +8,7 @@ Table of Contents                            *nvim-recorder-table-of-contents*
   - Setup                                 |nvim-recorder-nvim-recorder--setup|
   - Basic Usage                     |nvim-recorder-nvim-recorder--basic-usage|
   - Advanced Usage               |nvim-recorder-nvim-recorder--advanced-usage|
-  - About me                           |nvim-recorder-nvim-recorder--about-me|
+  - About the developer     |nvim-recorder-nvim-recorder--about-the-developer|
 
 ==============================================================================
 1. nvim-recorder                                *nvim-recorder-nvim-recorder-*
@@ -27,7 +27,7 @@ Enhancethe usage of macros in Neovim.
     - |nvim-recorder-performance-optimizations|
     - |nvim-recorder-macro-breakpoints|
     - |nvim-recorder-lazy-loading-the-plugin|
-- |nvim-recorder-about-me|
+- |nvim-recorder-about-the-developer|
 
 
 FEATURES                               *nvim-recorder-nvim-recorder--features*
@@ -191,10 +191,9 @@ ADVANCED USAGE                   *nvim-recorder-nvim-recorder--advanced-usage*
 
 PERFORMANCE OPTIMIZATIONS ~
 
-Running long macros or macros with a high count, can be demanding on the system
-and result in lags. For this reason, `nvim-recorder` provides some performance
-optimizations that are temporarily enabled when a macro with a high count is
-run.
+Running macros with a high count can be demanding on the system and result in
+lags. For this reason, `nvim-recorder` provides some performance optimizations
+that are temporarily enabled when a macro with a high count is run.
 
 Note that these optimizations do have some potential drawbacks. -
 |`lazyredraw`| disables redrawing of the screen, which makes it harder to
@@ -207,12 +206,12 @@ during the macro, since it can potentially disrupt those plugins’ effect.
 
 MACRO BREAKPOINTS ~
 
-`nvim-recorder` allows you to set breakpoints in your macros, which can be
+`nvim-recorder` allows you to set breakpoints in your macros which can be
 helpful for debugging macros. Breakpoints are automatically ignored when you
 trigger the macro with a count.
 
-**Setting Breakpoints** 1. _During a recording,_ press the `addBreakPoint` key
-(default: `##`) in normal mode. 2. _After a recording,_ use `editMacro` and add
+**Setting Breakpoints** - _During a recording:_ press the `addBreakPoint` key
+(default: `##`) in normal mode - _After a recording:_ use `editMacro` and add
 or remove the `##` manually.
 
 **Playing Macros with Breakpoints** - Using the `playMacro` key, the macro
@@ -292,7 +291,7 @@ lazy-loading it should not have a big impact.
 <
 
 
-ABOUT ME                               *nvim-recorder-nvim-recorder--about-me*
+ABOUT THE DEVELOPER         *nvim-recorder-nvim-recorder--about-the-developer*
 
 In my day job, I am a sociologist studying the social mechanisms underlying the
 digital economy. For my PhD project, I investigate the governance of the app
@@ -303,10 +302,8 @@ touch.
 **Blog** I also occasionally blog about vim: Nano Tips for Vim
 <https://nanotipsforvim.prose.sh>
 
-**Profiles** - Discord <https://discordapp.com/users/462774483044794368/> -
-Academic Website <https://chris-grieser.de/> - GitHub
-<https://github.com/chrisgrieser/> - Twitter <https://twitter.com/pseudo_meta>
-- Mastodon <https://pkm.social/@pseudometa> - ResearchGate
+**Profiles** - Website <https://chris-grieser.de/> - Mastodon
+<https://pkm.social/@pseudometa> - ResearchGate
 <https://www.researchgate.net/profile/Christopher-Grieser> - LinkedIn
 <https://www.linkedin.com/in/christopher-grieser-ba693b17a/>
 
