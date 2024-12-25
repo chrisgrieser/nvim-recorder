@@ -1,4 +1,4 @@
-*nvim-recorder.txt*          For Neovim          Last change: 2024 December 09
+*nvim-recorder.txt*          For Neovim          Last change: 2024 December 25
 
 ==============================================================================
 Table of Contents                            *nvim-recorder-table-of-contents*
@@ -109,7 +109,7 @@ CONFIGURATION ~
         -- Use nerdfont icons in the status bar components and keymap descriptions
         useNerdfontIcons = true,
     
-        -- Performance optimzations for macros with high count. When `playMacro` is
+        -- Performance optimizations for macros with high count. When `playMacro` is
         -- triggered with a count higher than the threshold, nvim-recorder
         -- temporarily changes changes some settings for the duration of the macro.
         performanceOpts = {
@@ -246,7 +246,7 @@ is non-public and can be changed without deprecation notice
 LAZY-LOADING THE PLUGIN ~
 
 `nvim-recorder` is best lazy-loaded on the mappings for `startStopRecording`
-and `playMacro`. However, adding the statusline components to `lualine` will
+and `playMacro`. However, adding the status line components to `lualine` will
 cause the plugin to load before you start or play a recording.
 
 To avoid this, the statusline components need to be loaded only in the
@@ -299,13 +299,13 @@ economy and how software ecosystems manage the tension between innovation and
 compatibility. If you are interested in this subject, feel free to get in
 touch.
 
-**Blog** I also occasionally blog about vim: Nano Tips for Vim
+I also occasionally blog about vim: Nano Tips for Vim
 <https://nanotipsforvim.prose.sh>
 
-**Profiles** - Website <https://chris-grieser.de/> - Mastodon
-<https://pkm.social/@pseudometa> - ResearchGate
-<https://www.researchgate.net/profile/Christopher-Grieser> - LinkedIn
-<https://www.linkedin.com/in/christopher-grieser-ba693b17a/>
+- Website <https://chris-grieser.de/>
+- Mastodon <https://pkm.social/@pseudometa>
+- ResearchGate <https://www.researchgate.net/profile/Christopher-Grieser>
+- LinkedIn <https://www.linkedin.com/in/christopher-grieser-ba693b17a/>
 
 
 
