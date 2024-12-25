@@ -97,7 +97,7 @@ require("recorder").setup {
 	-- Use nerdfont icons in the status bar components and keymap descriptions
 	useNerdfontIcons = true,
 
-	-- Performance optimzations for macros with high count. When `playMacro` is
+	-- Performance optimizations for macros with high count. When `playMacro` is
 	-- triggered with a count higher than the threshold, nvim-recorder
 	-- temporarily changes changes some settings for the duration of the macro.
 	performanceOpts = {
@@ -175,9 +175,9 @@ lualine_z = {
 ## Advanced Usage
 
 ### Performance Optimizations
-Running macros with a high count can be demanding on the system and result in lags. 
-For this reason, `nvim-recorder` provides some performance optimizations that are 
-temporarily enabled when a macro with a high count is run.
+Running macros with a high count can be demanding on the system and result in
+lags. For this reason, `nvim-recorder` provides some performance optimizations
+that are temporarily enabled when a macro with a high count is run.
 
 Note that these optimizations do have some potential drawbacks.
 - [`lazyredraw`](https://neovim.io/doc/user/options.html#'lazyredraw') disables
@@ -235,7 +235,7 @@ notice](https://github.com/mfussenegger/nvim-dap/discussions/810#discussioncomme
 
 ### Lazy-loading the plugin
 `nvim-recorder` is best lazy-loaded on the mappings for `startStopRecording` and
-`playMacro`. However, adding the statusline components to `lualine` will cause the
+`playMacro`. However, adding the status line components to `lualine` will cause the
 plugin to load before you start or play a recording.
 
 To avoid this, the statusline components need to be loaded only in the plugin's
@@ -285,23 +285,16 @@ digital economy. For my PhD project, I investigate the governance of the app
 economy and how software ecosystems manage the tension between innovation and
 compatibility. If you are interested in this subject, feel free to get in touch.
 
-__Blog__  
 I also occasionally blog about vim: [Nano Tips for Vim](https://nanotipsforvim.prose.sh)
 
-__Profiles__
 - [Website](https://chris-grieser.de/)
 - [Mastodon](https://pkm.social/@pseudometa)
 - [ResearchGate](https://www.researchgate.net/profile/Christopher-Grieser)
 - [LinkedIn](https://www.linkedin.com/in/christopher-grieser-ba693b17a/)
 
-<a href='https://ko-fi.com/Y8Y86SQ91' target='_blank'>
-<img
-	height='36'
-	style='border:0px;height:36px;'
-	src='https://cdn.ko-fi.com/cdn/kofi1.png?v=3'
-	border='0'
-	alt='Buy Me a Coffee at ko-fi.com'
-/></a>
+<a href='https://ko-fi.com/Y8Y86SQ91' target='_blank'> <img height='36'
+style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=3'
+border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
 [^1]: As opposed to vim, Neovim already allows you to use `Q` to [play the last
 	recorded macro](https://neovim.io/doc/user/repeat.html#Q). Considering this,
