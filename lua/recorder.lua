@@ -6,7 +6,7 @@ local opt = vim.opt
 local keymap = vim.keymap.set
 
 -- internal vars
-local macroRegs, slotIndex, defaultLogLevel, breakCounter
+local config, macroRegs, slotIndex, defaultLogLevel, breakCounter
 
 -- Use this function to normalize keycodes (which can have multiple
 -- representations, e.g. <C-f> or <C-F>).
@@ -111,7 +111,7 @@ local function playRecording()
 			"essential",
 			vim.log.levels.ERROR
 		)
-		normal("q") -- end recording
+		normal("q")   -- end recording
 		setMacro(reg, "") -- empties macro since the recursion has been recorded there
 		return
 	end
@@ -149,13 +149,13 @@ local function playRecording()
 			breakCounter = 0
 		end
 
-	-- macro (w/ perf optimizations)
+		-- macro (w/ perf optimizations)
 	elseif usePerfOptimizations then
 		-- message to avoid confusion by the user due to performance optimizations
 		local msg = "Running macro with performance optimizations…"
 		if perf.lazyredraw then
 			msg = msg
-				.. "\nnvim might appear to freeze due to lazy redrawing. \nThis is to be expected and not a bug."
+				 .. "\nnvim might appear to freeze due to lazy redrawing. \nThis is to be expected and not a bug."
 		end
 		notify(msg, "nonessential", nil, { animate = false }) -- no animation as macro will be blocking
 
@@ -181,7 +181,7 @@ local function playRecording()
 			opt.eventignore = original.eventignore
 		end, 500)
 
-	-- macro (regular)
+		-- macro (regular)
 	else
 		normal(v.count1 .. "@" .. reg)
 	end
@@ -209,15 +209,32 @@ local function editMacro()
 	breakCounter = 0 -- reset breakpoint counter
 	local reg = macroRegs[slotIndex]
 	local macroContent = getMacro(reg)
-	local inputConfig = {
-		prompt = "Edit Macro [" .. reg .. "]:",
-		default = macroContent,
-	}
-	vim.ui.input(inputConfig, function(editedMacro)
-		if not editedMacro then return end -- cancellation
-		setMacro(reg, editedMacro)
-		notify("Edited Macro [" .. reg .. "]:\n" .. editedMacro, "nonessential")
-	end)
+	if config.editInBuffer then
+		-- clear prev autocmds if exists, otherwise create group
+		local rec_group = vim.api.nvim_create_augroup("nvim-recorder-augroup", {})
+
+		local tmpbuf = vim.api.nvim_create_buf(false, true)
+		fn.setbufline(tmpbuf, "$", macroContent)
+		vim.api.nvim_open_win(tmpbuf, true, { split = 'right', win = 0 })
+		vim.api.nvim_create_autocmd({ "BufHidden", "BufDelete" }, {
+			group = rec_group,
+			desc = "Temporary autocmd for nvim-recorder when editing macro in buffer",
+			callback = function()
+				local editedMacro = vim.api.nvim_buf_get_lines(tmpbuf, 0, 1, false)
+				setMacro(reg, editedMacro)
+			end,
+		})
+	else
+		local inputConfig = {
+			prompt = "Edit Macro [" .. reg .. "]:",
+			default = macroContent,
+		}
+		vim.ui.input(inputConfig, function(editedMacro)
+			if not editedMacro then return end -- cancellation
+			setMacro(reg, editedMacro)
+			notify("Edited Macro [" .. reg .. "]:\n" .. editedMacro, "nonessential")
+		end)
+	end
 end
 
 ---@param mode? "silent"
@@ -269,6 +286,7 @@ end
 
 ---@class configObj
 ---@field slots string[] named register slots
+---@field editInBuffer boolean allows to edit in buffer, write to save changes
 ---@field clear boolean whether to clear slots/registers on setup
 ---@field timeout number Default timeout for notification
 ---@field mapping maps individual mappings
@@ -301,6 +319,7 @@ function M.setup(userConfig)
 
 	local defaultConfig = {
 		slots = { "a", "b" },
+		editInBuffer = false,
 		mapping = {
 			startStopRecording = "q",
 			playMacro = "Q",
@@ -323,7 +342,7 @@ function M.setup(userConfig)
 			autocmdEventsIgnore = { "TextChangedI", "TextChanged", "InsertLeave", "InsertEnter", "InsertCharPre" },
 		},
 	}
-	local config = vim.tbl_deep_extend("keep", userConfig, defaultConfig)
+	config = vim.tbl_deep_extend("keep", userConfig, defaultConfig)
 
 	-- settings to be used globally
 	perf = config.performanceOpts
@@ -358,7 +377,8 @@ function M.setup(userConfig)
 	keymap("n", config.mapping.editMacro, editMacro, { desc = icon .. "Edit Macro" })
 	keymap("n", config.mapping.yankMacro, yankMacro, { desc = icon .. "Yank Macro" })
 	-- stylua: ignore
-	keymap("n", config.mapping.deleteAllMacros, deleteAllMacros, { desc = icon .. "Delete All Macros" })
+	keymap("n", config.mapping.deleteAllMacros, deleteAllMacros,
+		{ desc = icon .. "Delete All Macros" })
 
 	-- (experimental) if true, nvim-recorder and dap will use shared keymaps:
 	-- 1) `addBreakPoint` will map to `dap.toggle_breakpoint()` outside
@@ -368,7 +388,7 @@ function M.setup(userConfig)
 	-- macro-slot instead
 	dapSharedKeymaps = config.dapSharedKeymaps or false
 	local breakPointDesc = dapSharedKeymaps and dapSharedIcon .. "Breakpoint"
-		or icon .. "Insert Macro Breakpoint."
+		 or icon .. "Insert Macro Breakpoint."
 	keymap("n", breakPointKey, addBreakPoint, { desc = breakPointDesc })
 	local playDesc = dapSharedKeymaps and dapSharedIcon .. "Continue/Play" or icon .. "Play Macro"
 	keymap("n", config.mapping.playMacro, playRecording, { desc = playDesc })
