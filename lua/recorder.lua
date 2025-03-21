@@ -6,7 +6,7 @@ local opt = vim.opt
 local keymap = vim.keymap.set
 
 -- internal vars
-local macroRegs, slotIndex, defaultLogLevel, breakCounter
+local config, macroRegs, slotIndex, defaultLogLevel, breakCounter
 
 -- Use this function to normalize keycodes (which can have multiple
 -- representations, e.g. <C-f> or <C-F>).
@@ -56,14 +56,47 @@ local function normal(cmdStr) vim.cmd.normal { cmdStr, bang = true } end
 
 -- start/stop recording macro into the current slot
 local function toggleRecording()
-	local reg = macroRegs[slotIndex]
+	local reg = ""
+	if config.dynamicSlots == "original" then
+		-- start recording
+		if not isRecording() then
+			breakCounter = 0 -- reset break points
+			reg = fn.nr2char(fn.getchar())
+			normal("q" .. reg)
 
-	-- start recording
-	if not isRecording() then
-		breakCounter = 0 -- reset break points
-		normal("q" .. reg)
-		notify("Recording to [" .. reg .. "]…", "essential")
-		return
+			local isDefined = false
+			for index, value in ipairs(macroRegs) do
+				if value == reg then
+					isDefined = true
+					slotIndex = index
+					break
+				end
+			end
+
+			if isDefined then
+				macroRegs[slotIndex] = reg
+			else
+				table.insert(macroRegs, reg)
+				slotIndex = #macroRegs
+			end
+
+			notify("Recording to [" .. reg .. "]…", "essential")
+			return
+		end
+	else
+		if config.dynamicSlots == "rotate" and not isRecording() then
+			slotIndex = slotIndex + 1
+			if slotIndex > #macroRegs then slotIndex = 1 end
+		end
+		reg = macroRegs[slotIndex]
+
+		-- start recording
+		if not isRecording() then
+			breakCounter = 0 -- reset break points
+			normal("q" .. reg)
+			notify("Recording to [" .. reg .. "]…", "essential")
+			return
+		end
 	end
 
 	-- stop recording
@@ -79,6 +112,7 @@ local function toggleRecording()
 
 	local justRecorded = fn.keytrans(getMacro(reg))
 	if justRecorded == "" then
+		if config.dynamicSlots == "rotate" then slotIndex = slotIndex - 1 end
 		setMacro(reg, prevRec)
 		notify("Recording aborted.\n(Previous recording is kept.)", "essential")
 	elseif not lessNotifications then
@@ -269,6 +303,10 @@ end
 
 ---@class configObj
 ---@field slots string[] named register slots
+---@field dynamicSlots string 3 states we could choose from:
+---static   -> use static slots
+---original -> works as original neovim recording impl
+---rotate   -> through letters specified in slots[] if end is encountered it goes(overwrite) from start
 ---@field clear boolean whether to clear slots/registers on setup
 ---@field timeout number Default timeout for notification
 ---@field mapping maps individual mappings
@@ -301,6 +339,7 @@ function M.setup(userConfig)
 
 	local defaultConfig = {
 		slots = { "a", "b" },
+		dynamicSlots = "static",
 		mapping = {
 			startStopRecording = "q",
 			playMacro = "Q",
@@ -323,7 +362,7 @@ function M.setup(userConfig)
 			autocmdEventsIgnore = { "TextChangedI", "TextChanged", "InsertLeave", "InsertEnter", "InsertCharPre" },
 		},
 	}
-	local config = vim.tbl_deep_extend("keep", userConfig, defaultConfig)
+	config = vim.tbl_deep_extend("keep", userConfig, defaultConfig)
 
 	-- settings to be used globally
 	perf = config.performanceOpts
@@ -331,16 +370,19 @@ function M.setup(userConfig)
 	lessNotifications = config.lessNotifications
 	defaultLogLevel = config.logLevel
 
+	macroRegs = {} -- when original we want to append to array
 	-- validate macro slots
-	macroRegs = config.slots
-	for _, reg in pairs(macroRegs) do
-		if not (reg:find("^%l$")) then
-			notify(
-				('"%s" is an invalid slot. Choose only named registers (a-z).'):format(reg),
-				"essential",
-				vim.log.levels.ERROR
-			)
-			return
+	if config.dynamicSlots ~= "original" then
+		macroRegs = config.slots
+		for _, reg in pairs(macroRegs) do
+			if not (reg:find("^%l$")) then
+				notify(
+					('"%s" is an invalid slot. Choose only named registers (a-z).'):format(reg),
+					"essential",
+					vim.log.levels.ERROR
+				)
+				return
+			end
 		end
 	end
 
