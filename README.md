@@ -71,6 +71,9 @@ require("recorder").setup {
 	-- startup.
 	slots = { "a", "b" },
 
+	-- allows to edit in buffer, quit to save changes
+	editInBuffer = false,
+
 	mapping = {
 		startStopRecording = "q",
 		playMacro = "Q",
