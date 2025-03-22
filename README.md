@@ -71,9 +71,8 @@ require("recorder").setup {
 	-- startup.
 	slots = { "a", "b" },
 
-    -- specify one of 3 options: 
+    -- specify one of options: 
     -- [static]   -> use static slots, this is default behaviour
-    -- [original] -> works as original neovim recording impl
     -- [rotate]   -> rotates through letters specified in slots[]
     dynamicSlots = "rotate",
 
