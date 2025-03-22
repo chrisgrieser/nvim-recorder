@@ -71,6 +71,11 @@ require("recorder").setup {
 	-- startup.
 	slots = { "a", "b" },
 
+    -- specify one of options: 
+    -- [static]   -> use static slots, this is default behaviour
+    -- [rotate]   -> rotates through letters specified in slots[]
+    dynamicSlots = "static",
+
 	mapping = {
 		startStopRecording = "q",
 		playMacro = "Q",

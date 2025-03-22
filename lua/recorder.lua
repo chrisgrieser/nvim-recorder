@@ -6,7 +6,7 @@ local opt = vim.opt
 local keymap = vim.keymap.set
 
 -- internal vars
-local macroRegs, slotIndex, defaultLogLevel, breakCounter
+local config, macroRegs, slotIndex, defaultLogLevel, breakCounter, firstRun
 
 -- Use this function to normalize keycodes (which can have multiple
 -- representations, e.g. <C-f> or <C-F>).
@@ -56,6 +56,11 @@ local function normal(cmdStr) vim.cmd.normal { cmdStr, bang = true } end
 
 -- start/stop recording macro into the current slot
 local function toggleRecording()
+	if config.dynamicSlots == "rotate" and not firstRun and not isRecording() then
+		slotIndex = slotIndex + 1
+		if slotIndex > #macroRegs then slotIndex = 1 end
+	end
+	if firstRun then firstRun = false end
 	local reg = macroRegs[slotIndex]
 
 	-- start recording
@@ -79,6 +84,7 @@ local function toggleRecording()
 
 	local justRecorded = fn.keytrans(getMacro(reg))
 	if justRecorded == "" then
+		if config.dynamicSlots == "rotate" then slotIndex = slotIndex - 1 end
 		setMacro(reg, prevRec)
 		notify("Recording aborted.\n(Previous recording is kept.)", "essential")
 	elseif not lessNotifications then
@@ -269,6 +275,9 @@ end
 
 ---@class configObj
 ---@field slots string[] named register slots
+---@field dynamicSlots string 2 states we could choose from:
+---static   -> use static slots
+---rotate   -> through letters specified in slots[] if end is encountered it goes(overwrite) from start
 ---@field clear boolean whether to clear slots/registers on setup
 ---@field timeout number Default timeout for notification
 ---@field mapping maps individual mappings
@@ -298,9 +307,11 @@ function M.setup(userConfig)
 	-- initialize values on plugin load
 	slotIndex = 1
 	breakCounter = 0
+	firstRun = true
 
 	local defaultConfig = {
 		slots = { "a", "b" },
+		dynamicSlots = "static",
 		mapping = {
 			startStopRecording = "q",
 			playMacro = "Q",
@@ -323,7 +334,7 @@ function M.setup(userConfig)
 			autocmdEventsIgnore = { "TextChangedI", "TextChanged", "InsertLeave", "InsertEnter", "InsertCharPre" },
 		},
 	}
-	local config = vim.tbl_deep_extend("keep", userConfig, defaultConfig)
+	config = vim.tbl_deep_extend("keep", userConfig, defaultConfig)
 
 	-- settings to be used globally
 	perf = config.performanceOpts
