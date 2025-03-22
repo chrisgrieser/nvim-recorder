@@ -83,6 +83,7 @@ local function toggleRecording()
 			notify("Recording to [" .. reg .. "]…", "essential")
 			return
 		end
+		reg = macroRegs[slotIndex]
 	else
 		if config.dynamicSlots == "rotate" and not isRecording() then
 			slotIndex = slotIndex + 1
