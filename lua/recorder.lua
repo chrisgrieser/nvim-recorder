@@ -62,6 +62,13 @@ local function toggleRecording()
 		if not isRecording() then
 			breakCounter = 0 -- reset break points
 			reg = fn.nr2char(fn.getchar())
+			if
+				string.match('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"', reg)
+				== nil
+			then
+				notify("Invalid reg [" .. reg .. "], aborting…", "essential")
+				return
+			end
 			normal("q" .. reg)
 
 			local isDefined = false
