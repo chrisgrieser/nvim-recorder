@@ -1,4 +1,4 @@
-*nvim-recorder.txt*          For Neovim          Last change: 2024 December 25
+*nvim-recorder.txt*            For Neovim           Last change: 2025 March 22
 
 ==============================================================================
 Table of Contents                            *nvim-recorder-table-of-contents*
@@ -82,6 +82,11 @@ CONFIGURATION ~
         -- The first register is the default register used as macro-slot after
         -- startup.
         slots = { "a", "b" },
+    
+        -- specify one of options: 
+        -- [static]   -> use static slots, this is default behaviour
+        -- [rotate]   -> rotates through letters specified in slots[]
+        dynamicSlots = "static",
     
         mapping = {
             startStopRecording = "q",
