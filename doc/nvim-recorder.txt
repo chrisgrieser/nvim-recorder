@@ -1,4 +1,4 @@
-*nvim-recorder.txt*             For Neovim            Last change: 2025 May 03
+*nvim-recorder.txt*            For Neovim            Last change: 2025 June 16
 
 ==============================================================================
 Table of Contents                            *nvim-recorder-table-of-contents*
