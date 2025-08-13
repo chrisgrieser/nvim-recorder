@@ -22,7 +22,7 @@ local getMacro = function(reg)
 	-- they are always consistent.
 	return vim.api.nvim_replace_termcodes(fn.keytrans(vim.fn.getreg(reg)), true, true, true)
 end
-local setMacro = function(reg, recording) vim.fn.setreg(reg, recording, "c") end
+local setMacro = function(reg, recording) vim.fn.setreg(reg, vim.api.nvim_replace_termcodes(recording, true, true, true), "c") end
 
 -- vars which can be set by the user
 local toggleKey, breakPointKey, dapSharedKeymaps, lessNotifications, useNerdfontIcons
@@ -214,7 +214,7 @@ end
 local function editMacro()
 	breakCounter = 0 -- reset breakpoint counter
 	local reg = macroRegs[slotIndex]
-	local macroContent = getMacro(reg)
+	local macroContent = fn.keytrans(getMacro(reg))
 	local inputConfig = {
 		prompt = "Edit Macro [" .. reg .. "]:",
 		default = macroContent,
