@@ -214,14 +214,14 @@ end
 local function editMacro()
 	breakCounter = 0 -- reset breakpoint counter
 	local reg = macroRegs[slotIndex]
-	local macroContent = getMacro(reg)
+	local macroContent = fn.keytrans(getMacro(reg))
 	local inputConfig = {
 		prompt = "Edit Macro [" .. reg .. "]:",
 		default = macroContent,
 	}
 	vim.ui.input(inputConfig, function(editedMacro)
 		if not editedMacro then return end -- cancellation
-		setMacro(reg, editedMacro)
+		setMacro(reg, vim.api.nvim_replace_termcodes(editedMacro, true, true, true))
 		notify("Edited Macro [" .. reg .. "]:\n" .. editedMacro, "nonessential")
 	end)
 end
