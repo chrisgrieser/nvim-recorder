@@ -1,4 +1,4 @@
-*nvim-recorder.txt*           For Neovim           Last change: 2025 August 18
+*nvim-recorder.txt*           For Neovim          Last change: 2025 October 13
 
 ==============================================================================
 Table of Contents                            *nvim-recorder-table-of-contents*
@@ -32,17 +32,17 @@ Enhancethe usage of macros in Neovim.
 
 FEATURES                               *nvim-recorder-nvim-recorder--features*
 
-- **Simplified controls**One key to start and stop recording, a second key for
+- **Simplified controls**: One key to start and stop recording, a second key for
     playing the macro. Instead of `qa … q @a @@`, you just do `q … q Q Q`.
 - **Macro Breakpoints** for easier debugging of macros. Breakpoints can also be
     set after the recording and are automatically ignored when triggering a macro
     with a count.
-- **Status line components**Particularly useful if you use `cmdheight=0` where
+- **Status line components**: Particularly useful if you use `cmdheight=0` where
     the recording status is not visible.
-- **Macro-to-Mapping**Copy a macro, so you can save it as a mapping.
-- **Various quality-of-life features**notifications with macro content, the
+- **Macro-to-Mapping**: Copy a macro, so you can save it as a mapping.
+- **Various quality-of-life features**: notifications with macro content, the
     ability to cancel a recording, a command to edit macros,
-- **Performance Optimizations for large macros**When the macro is triggered
+- **Performance Optimizations for large macros**: When the macro is triggered
     with a high count, temporarily enable some performance improvements.
 - Uses up-to-date nvim features like `vim.notify`. This means you can get
     confirmation notices with plugins like
@@ -156,7 +156,7 @@ STATUS LINE COMPONENTS ~
   [!TIP] Use with the config `clear = true` to see recordings you made this
   session.
 Example for adding the status line components to lualine
-<https://github.com/nvim-lualine/lualine.nvim>
+<https://github.com/nvim-lualine/lualine.nvim>:
 
 >lua
     lualine_y = {
@@ -168,24 +168,24 @@ Example for adding the status line components to lualine
 <
 
 
-  [!TIP] Putthe components in different status line segments, so they have a
+  [!TIP] Put the components in different status line segments, so they have a
   different color, making the recording status more distinguishable from saved
   recordings
 
 BASIC USAGE                         *nvim-recorder-nvim-recorder--basic-usage*
 
-- `startStopRecording`Starts recording to the current macro slot (so you do
+- `startStopRecording`: Starts recording to the current macro slot (so you do
     not need to specify a register). Press again to end the recording.
-- `playMacro`Plays the macro in the current slot (without the need to specify
+- `playMacro`: Plays the macro in the current slot (without the need to specify
     a register).
-- `switchSlot`Cycles through the registers you specified in the configuration.
+- `switchSlot`: Cycles through the registers you specified in the configuration.
     Also show a notification with the slot and its content. (The currently
     selected slot can be seen in the |nvim-recorder-status-line-component|.)
-- `editMacro`Edit the macro recorded in the active slot. (Be aware that these
+- `editMacro`: Edit the macro recorded in the active slot. (Be aware that these
     are the keystrokes in "encoded" form.)
-- `yankMacro`Copies the current macro in decoded form that can be used to
+- `yankMacro`: Copies the current macro in decoded form that can be used to
     create a mapping from it. Breakpoints are removed from the copied macro.
-- `deleteAllMacros`Copies the current macro in decoded form that can be used to
+- `deleteAllMacros`: Copies the current macro in decoded form that can be used to
 
 
   [!TIP] For recursive macros (playing a macro inside a macro), you can still use
