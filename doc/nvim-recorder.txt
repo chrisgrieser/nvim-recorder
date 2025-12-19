@@ -1,4 +1,4 @@
-*nvim-recorder.txt*          For Neovim          Last change: 2025 November 24
+*nvim-recorder.txt*          For Neovim          Last change: 2025 December 19
 
 ==============================================================================
 Table of Contents                            *nvim-recorder-table-of-contents*
@@ -185,7 +185,8 @@ BASIC USAGE                         *nvim-recorder-nvim-recorder--basic-usage*
     are the keystrokes in "encoded" form.)
 - `yankMacro`: Copies the current macro in decoded form that can be used to
     create a mapping from it. Breakpoints are removed from the copied macro.
-- `deleteAllMacros`: Copies the current macro in decoded form that can be used to
+- `deleteAllMacros`: Copies the current macro in decoded form that can be used
+    to
 
 
   [!TIP] For recursive macros (playing a macro inside a macro), you can still use
