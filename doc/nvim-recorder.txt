@@ -255,7 +255,7 @@ LAZY-LOADING THE PLUGIN ~
 and `playMacro`. However, adding the status line components to `lualine` will
 cause the plugin to load before you start or play a recording.
 
-To avoid this, the statusline components need to be loaded only in the
+To avoid this, the status line components need to be loaded only in the
 plugin’s `config`. The drawback of this method is that no component is shown
 when until you start or play a recording (which you can completely disregard
 when you set `clear = true`, though).
