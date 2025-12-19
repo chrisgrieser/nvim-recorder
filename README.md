@@ -202,12 +202,12 @@ Note that these optimizations do have some potential drawbacks.
 helpful for debugging macros. Breakpoints are automatically ignored when you
 trigger the macro with a count.
 
-**Setting Breakpoints**  
+**Setting Breakpoints** <!-- rumdl-disable-line MD036 -->
 - *During a recording:* press the `addBreakPoint` key (default: `##`) in normal
    mode
 - *After a recording:* use `editMacro` and add or remove the `##` manually.
 
-**Playing Macros with Breakpoints**  
+**Playing Macros with Breakpoints** <!-- rumdl-disable-line MD036 -->
 - Using the `playMacro` key, the macro automatically stops at the next
   breakpoint. The next time you press `playMacro`, the next segment of the macro
   is played.
@@ -220,7 +220,7 @@ trigger the macro with a count.
 > moving a few characters to the left or right. That way you can also use
 > breakpoints to manually correct irregularities.
 
-**Ignoring Breakpoints**  
+**Ignoring Breakpoints** <!-- rumdl-disable-line MD036 -->
 When you play the macro with a *count* (for example `50Q`), breakpoints are
 automatically ignored.
 
@@ -245,7 +245,7 @@ notice](https://github.com/mfussenegger/nvim-dap/discussions/810#discussioncomme
 `playMacro`. However, adding the status line components to `lualine` will cause
 the plugin to load before you start or play a recording.
 
-To avoid this, the statusline components need to be loaded only in the plugin's
+To avoid this, the status line components need to be loaded only in the plugin's
 `config`. The drawback of this method is that no component is shown when until
 you start or play a recording (which you can completely disregard when you set
 `clear = true`, though).
