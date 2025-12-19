@@ -1,7 +1,4 @@
-<!-- LTeX: enabled=false -->
-
-# nvim-recorder 📹
-<!-- LTeX: enabled=true -->
+# nvim-recorder 📹 <!-- rumdl-disable-line MD063 `nvim` lowercased -->
 <a href="https://dotfyle.com/plugins/chrisgrieser/nvim-recorder">
 <img alt="badge" src="https://dotfyle.com/plugins/chrisgrieser/nvim-recorder/shield"/></a>
 
@@ -128,7 +125,7 @@ require("recorder").setup {
 If you want to handle multiple macros or use `cmdheight=0`, it is recommended to
 also set up the status line components:
 
-### Status Line Components
+### Status line components
 
 ```lua
 -- Indicates whether you are currently recording. Useful if you are using
@@ -159,7 +156,7 @@ lualine_z = {
 > a different color, making the recording status more distinguishable
 > from saved recordings
 
-## Basic Usage
+## Basic usage
 - `startStopRecording`: Starts recording to the current macro slot (so you do
   not need to specify a register). Press again to end the recording.
 - `playMacro`: Plays the macro in the current slot (without the need to specify
@@ -179,9 +176,9 @@ lualine_z = {
 > For recursive macros (playing a macro inside a macro), you can still use
 > the default command `@a`.
 
-## Advanced Usage
+## Advanced usage
 
-### Performance Optimizations
+### Performance optimizations
 Running macros with a high count can be demanding on the system and result in
 lags. For this reason, `nvim-recorder` provides some performance optimizations
 that are temporarily enabled when a macro with a high count is run.
@@ -197,7 +194,7 @@ Note that these optimizations do have some potential drawbacks.
   functionality during the macro, since it can potentially disrupt those
   plugins' effect.
 
-### Macro Breakpoints
+### Macro breakpoints
 `nvim-recorder` allows you to set breakpoints in your macros which can be
 helpful for debugging macros. Breakpoints are automatically ignored when you
 trigger the macro with a count.
