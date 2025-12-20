@@ -1,4 +1,4 @@
-*nvim-recorder.txt*          For Neovim          Last change: 2025 December 19
+*nvim-recorder.txt*          For Neovim          Last change: 2025 December 20
 
 ==============================================================================
 Table of Contents                            *nvim-recorder-table-of-contents*
@@ -6,8 +6,8 @@ Table of Contents                            *nvim-recorder-table-of-contents*
 1. nvim-recorder                                |nvim-recorder-nvim-recorder-|
   - Features                           |nvim-recorder-nvim-recorder--features|
   - Setup                                 |nvim-recorder-nvim-recorder--setup|
-  - Basic Usage                     |nvim-recorder-nvim-recorder--basic-usage|
-  - Advanced Usage               |nvim-recorder-nvim-recorder--advanced-usage|
+  - Basic usage                     |nvim-recorder-nvim-recorder--basic-usage|
+  - Advanced usage               |nvim-recorder-nvim-recorder--advanced-usage|
   - About the developer     |nvim-recorder-nvim-recorder--about-the-developer|
 
 ==============================================================================
@@ -15,7 +15,7 @@ Table of Contents                            *nvim-recorder-table-of-contents*
 
 
 
-Enhancethe usage of macros in Neovim.
+Enhance the usage of macros in Neovim.
 
 - |nvim-recorder-features|
 - |nvim-recorder-setup|
