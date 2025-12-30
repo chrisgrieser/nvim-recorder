@@ -1,4 +1,4 @@
-# nvim-recorder 📹 <!-- rumdl-disable-line MD063 `nvim` lowercased -->
+# nvim-recorder 📹 <!-- rumdl-disable-line MD063 -->
 <a href="https://dotfyle.com/plugins/chrisgrieser/nvim-recorder">
 <img alt="badge" src="https://dotfyle.com/plugins/chrisgrieser/nvim-recorder/shield"/></a>
 
