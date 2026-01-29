@@ -1,23 +1,21 @@
-# nvim-recorder 📹 <!-- rumdl-disable-line MD063 -->
+# Nvim-recorder 📹 <!-- rumdl-disable-line MD063 -->
 <a href="https://dotfyle.com/plugins/chrisgrieser/nvim-recorder">
 <img alt="badge" src="https://dotfyle.com/plugins/chrisgrieser/nvim-recorder/shield"/></a>
 
 Enhance the usage of macros in Neovim.
 
 <!-- toc -->
-
 - [Features](#features)
 - [Setup](#setup)
     - [Installation](#installation)
     - [Configuration](#configuration)
-    - [Status Line Components](#status-line-components)
-- [Basic Usage](#basic-usage)
-- [Advanced Usage](#advanced-usage)
-    - [Performance Optimizations](#performance-optimizations)
-    - [Macro Breakpoints](#macro-breakpoints)
+    - [Status line components](#status-line-components)
+- [Basic usage](#basic-usage)
+- [Advanced usage](#advanced-usage)
+    - [Performance optimizations](#performance-optimizations)
+    - [Macro breakpoints](#macro-breakpoints)
     - [Lazy-loading the plugin](#lazy-loading-the-plugin)
 - [About the developer](#about-the-developer)
-
 <!-- tocstop -->
 
 ## Features
