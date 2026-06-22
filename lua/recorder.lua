@@ -215,8 +215,12 @@ local function editMacro()
 	breakCounter = 0 -- reset breakpoint counter
 	local reg = macroRegs[slotIndex]
 	local macroContent = fn.keytrans(getMacro(reg))
+	local prompt = "Edit Macro [" .. reg .. "]:"
+	if (#macroRegs == 1) then
+		prompt = "Edit Macro:"
+	end
 	local inputConfig = {
-		prompt = "Edit Macro [" .. reg .. "]:",
+		prompt = prompt,
 		default = macroContent,
 	}
 	vim.ui.input(inputConfig, function(editedMacro)
